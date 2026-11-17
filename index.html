@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pressure-Proof Auction Board</title>
+<meta name="description" content="The most reliable players under pressure that Rajasthan Royals can bid for at the IPL 2027 auction: rankings, player cards and a squad builder. An independent entry for SupeRR Selector Season 2.">
+<meta property="og:title" content="Pressure-Proof Auction Board">
+<meta property="og:description" content="Who holds their nerve, and who can the Royals actually buy? Player cards, rankings and a squad builder for the IPL 2027 auction.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 3 57 17.5v29L32 61 7 46.5v-29z' fill='%23FF2E88'/%3E%3Ccircle cx='32' cy='32' r='13' fill='%23fff'/%3E%3Cpath d='M23 25c6 4 6 10 0 14M41 25c-6 4-6 10 0 14' stroke='%23FF2E88' stroke-width='2.5' fill='none'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#03100A; --panel:rgba(6,13,22,.80); --panel-2:rgba(10,20,34,.88);
+  --line:rgba(255,255,255,.12); --line-2:rgba(255,255,255,.22);
+  --text:#F3F6FA; --muted:#A3B4C6; --dim:#718599;
+  --pink:#FF2E88; --pink-2:#FF73B2; --blue:#3DA5FF; --violet:#A78BFF; --gold:#FFC83D;
+  --good:#47E08F; --bad:#FF6B6B;
+  --hud:"Teko","Barlow Condensed",system-ui,sans-serif;
+  --cond:"Barlow Condensed","Barlow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cut:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--text); font:15px/1.5 var(--body); overflow-x:clip; -webkit-font-smoothing:antialiased}
+a{color:var(--pink-2)}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------------------------------------------------------------- the ground */
+.ground{position:fixed; inset:0; z-index:-1; overflow:hidden}
+.ground svg{width:100%; height:100%; display:block}
+.ground .lights{position:absolute; inset:0;
+  background:
+    radial-gradient(circle at 4% -4%, rgba(255,248,214,.30), transparent 26%),
+    radial-gradient(circle at 96% -4%, rgba(255,248,214,.30), transparent 26%),
+    radial-gradient(circle at 4% 104%, rgba(255,248,214,.16), transparent 24%),
+    radial-gradient(circle at 96% 104%, rgba(255,248,214,.16), transparent 24%)}
+.ground .shade{position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(2,9,6,.62) 0%, rgba(2,9,6,.30) 38%, rgba(2,9,6,.48) 70%, rgba(2,9,6,.78) 100%)}
+.ground .scan{position:absolute; inset:0; opacity:.22;
+  background:repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 4px)}
+
+/* ---------------------------------------------------------------- top HUD */
+.top{position:sticky; top:0; z-index:20; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  background:linear-gradient(180deg, rgba(3,9,8,.92), rgba(3,9,8,.72)); border-bottom:1px solid var(--line)}
+.top-in{max-width:1480px; margin:0 auto; padding:10px 24px; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:18px}
+.brand{display:flex; align-items:center; gap:12px; min-width:0}
+.brand svg{width:38px; height:38px; flex:none; filter:drop-shadow(0 0 10px rgba(255,46,136,.55))}
+.brand b{display:block; font:600 30px/0.9 var(--hud); letter-spacing:.06em}
+.brand span{display:block; font:600 12.5px/1.2 var(--cond); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.tabs{display:flex; gap:6px; padding:4px; background:rgba(255,255,255,.05); border:1px solid var(--line); transform:skewX(-14deg)}
+.tabs button{border:0; background:transparent; padding:7px 24px; cursor:pointer; font:600 21px/1 var(--hud); letter-spacing:.08em; color:var(--muted); transition:background .2s,color .2s}
+.tabs button > span{display:inline-block; transform:skewX(14deg)}
+.tabs button small{font:600 12px var(--cond); letter-spacing:.06em; margin-left:6px; opacity:.75}
+.tabs button[aria-selected="true"]{background:linear-gradient(90deg,var(--pink),#FF5A9F); color:#fff; box-shadow:0 0 18px rgba(255,46,136,.45)}
+.tabs button:not([aria-selected="true"]):hover{color:#fff; background:rgba(255,255,255,.07)}
+.purse{justify-self:end; display:flex; gap:0; border:1px solid var(--line-2); background:rgba(0,0,0,.35)}
+.purse div{padding:5px 12px; border-left:1px solid var(--line)}
+.purse div:first-child{border-left:0}
+.purse b{display:block; font:600 21px/1 var(--hud); letter-spacing:.04em}
+.purse span{display:block; font:600 10.5px/1.1 var(--cond); letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+.purse .gold b{color:var(--gold)}
+
+/* ---------------------------------------------------------------- layout */
+.wrap{max-width:1480px; margin:0 auto; padding:0 24px}
+.intro{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; padding:18px 0 14px}
+.kicker{font:700 12.5px/1 var(--cond); letter-spacing:.2em; text-transform:uppercase; color:var(--pink-2)}
+.intro h1{margin:0; font:500 34px/1 var(--hud); letter-spacing:.03em}
+.intro h1 em{font-style:normal; color:var(--gold)}
+.intro p{margin:0; color:var(--muted); font-size:14px}
+
+.stage{display:grid; grid-template-columns:minmax(320px,372px) minmax(360px,1fr) minmax(330px,410px); grid-template-areas:"board card side"; gap:22px; align-items:start}
+.panel{position:relative; background:var(--panel); border:1px solid var(--line); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut)); padding:16px 18px 18px}
+.panel::before{content:""; position:absolute; left:0; top:0; width:42px; height:3px; background:var(--pink); transform:translateX(var(--cut))}
+.ph{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:0 0 12px; font:600 23px/1 var(--hud); letter-spacing:.07em; text-transform:uppercase}
+.ph small{font:600 12px/1.25 var(--cond); letter-spacing:.06em; color:var(--muted); text-transform:none; text-align:right}
+.lab{font:700 11.5px/1.2 var(--cond); letter-spacing:.16em; text-transform:uppercase; color:var(--dim)}
+
+/* ---------------------------------------------------------------- leaderboard */
+.board{grid-area:board}
+.rows{display:flex; flex-direction:column; gap:4px}
+.row{display:grid; grid-template-columns:28px 42px 1fr 52px; align-items:center; gap:9px; width:100%; text-align:left; cursor:pointer;
+  padding:6px 10px 6px 8px; border:1px solid transparent; background:rgba(255,255,255,.03); position:relative; transition:background .15s,border-color .15s,transform .15s}
+.row:hover{background:rgba(255,255,255,.08); transform:translateX(3px)}
+.row[aria-selected="true"]{background:linear-gradient(90deg,rgba(255,46,136,.26),rgba(255,46,136,.06)); border-color:rgba(255,46,136,.55)}
+.row[aria-selected="true"]::before{content:""; position:absolute; left:-1px; top:-1px; bottom:-1px; width:4px; background:var(--pink); box-shadow:0 0 12px var(--pink)}
+.row .r{font:600 27px/1 var(--hud); text-align:center; color:var(--muted)}
+.row[aria-selected="true"] .r{color:#fff}
+.row.first .r{color:var(--gold)}
+.row .nm{min-width:0}
+.row .nm b{display:block; font:600 15px/1.2 var(--body); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.row .nm small{display:block; font:500 12.5px/1.25 var(--cond); letter-spacing:.04em; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.row .pc{text-align:right}
+.row .pc b{display:block; font:600 20px/1 var(--hud); letter-spacing:.03em}
+.row .pc i{display:block; height:3px; margin-top:4px; background:rgba(255,255,255,.12); position:relative}
+.row .pc i::after{content:""; position:absolute; inset:0 auto 0 0; width:var(--w); background:linear-gradient(90deg,var(--pink),var(--gold))}
+.row .tick{position:absolute; right:8px; top:5px; width:7px; height:7px; border-radius:50%; background:var(--gold); box-shadow:0 0 8px var(--gold); display:none}
+.row.picked .tick{display:block}
+.hint{margin:10px 0 0; font:500 12.5px/1.35 var(--cond); letter-spacing:.04em; color:var(--dim)}
+.hint kbd{font:600 11px var(--cond); border:1px solid var(--line-2); padding:0 5px; border-radius:3px; color:var(--muted)}
+.h-narrow{display:none}
+.row .short{display:none}
+
+/* avatars */
+.av{--c:#345; position:relative; display:block; width:42px; height:42px; border-radius:50%; overflow:hidden; flex:none;
+  background:radial-gradient(circle at 50% 30%, color-mix(in srgb,var(--c) 85%,#fff 10%), color-mix(in srgb,var(--c) 45%,#050a12) 75%);
+  box-shadow:0 0 0 2px rgba(255,255,255,.18)}
+.av img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.av .sil{position:absolute; inset:8% 0 0; width:100%; height:92%}
+.sil .f{fill:rgba(255,255,255,.30)}
+.sil .s{stroke:rgba(255,255,255,.32); stroke-width:2.6; fill:none; stroke-linecap:round}
+
+/* ---------------------------------------------------------------- the card */
+.center{grid-area:card; display:flex; flex-direction:column; align-items:center; gap:14px; padding-top:4px}
+.card-wrap{perspective:1100px; width:min(350px,100%)}
+.card{--c:#345; --rx:0deg; --ry:0deg; --mx:50%; position:relative; transform:rotateX(var(--rx)) rotateY(var(--ry)); transform-style:preserve-3d; transition:transform .25s ease-out;
+  padding:2px; background:linear-gradient(160deg,var(--pink),rgba(255,255,255,.25) 40%,var(--blue));
+  clip-path:polygon(0 0,calc(100% - 28px) 0,100% 28px,100% 100%,28px 100%,0 calc(100% - 28px));
+  filter:drop-shadow(0 22px 40px rgba(0,0,0,.6))}
+.card.gold{background:linear-gradient(160deg,#FFE08A,var(--gold) 30%,#8A5A00 70%,var(--gold))}
+.card-in{position:relative; overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 27px) 0,100% 27px,100% 100%,27px 100%,0 calc(100% - 27px));
+  background:radial-gradient(120% 70% at 50% 18%, color-mix(in srgb,var(--c) 70%,transparent), transparent 62%), linear-gradient(180deg,#0F1B2E,#060B15 70%)}
+.card-in::after{content:""; position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen;
+  background:linear-gradient(115deg, transparent 32%, rgba(255,255,255,.16) 46%, rgba(255,160,210,.10) 50%, transparent 62%);
+  background-size:260% 100%; background-position:var(--mx) 0; transition:background-position .2s}
+.card-top{position:absolute; inset:0 0 auto; display:flex; justify-content:space-between; align-items:flex-start; padding:14px 16px; z-index:3}
+.rk small{display:block; font:700 11px/1 var(--cond); letter-spacing:.2em; color:rgba(255,255,255,.8)}
+.rk b{display:block; font:600 66px/.8 var(--hud); text-shadow:0 2px 14px rgba(0,0,0,.6); margin-top:6px}
+.card.gold .rk b{color:var(--gold)}
+.nat{text-align:right}
+.nat b{display:inline-block; font:600 22px/1 var(--hud); letter-spacing:.06em; padding:4px 9px 1px; background:var(--c); box-shadow:0 0 0 1px rgba(255,255,255,.35) inset}
+.nat span{display:block; margin-top:5px; font:600 11px/1 var(--cond); letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.85)}
+.card-photo{position:relative; height:268px; overflow:hidden}
+.card-photo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(1.05) contrast(1.05)}
+.card-photo .sil{position:absolute; left:50%; bottom:-6px; width:270px; height:270px; transform:translateX(-50%); z-index:1}
+.card-photo .sil .f{fill:rgba(255,255,255,.20)}
+.card-photo .sil .s{stroke:rgba(255,255,255,.24)}
+.card-photo::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(6,11,21,.55) 0%, transparent 30%, transparent 55%, #060B15 98%)}
+.credit{position:absolute; right:7px; top:76px; z-index:2; max-height:176px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+  writing-mode:vertical-rl; font:500 10.5px/1.2 var(--cond); letter-spacing:.04em; color:rgba(255,255,255,.66); text-decoration:none; text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.wm{position:absolute; left:50%; top:46%; transform:translate(-50%,-50%); font:600 190px/1 var(--hud); letter-spacing:.02em; color:transparent; -webkit-text-stroke:1.4px rgba(255,255,255,.13); pointer-events:none}
+.credit:hover{color:#fff}
+.ribbon{position:absolute; left:0; bottom:44px; z-index:2; padding:4px 12px 3px 16px; font:600 13px/1 var(--cond); letter-spacing:.12em; text-transform:uppercase;
+  background:linear-gradient(90deg,var(--pink),rgba(255,46,136,.75)); clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.ribbon.free{background:linear-gradient(90deg,var(--blue),rgba(61,165,255,.7))}
+.pick-badge{position:absolute; left:0; bottom:72px; z-index:2; padding:4px 12px 3px 16px; font:700 12px/1 var(--cond); letter-spacing:.14em; text-transform:uppercase; color:#1a1200;
+  background:var(--gold); clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.card-name{position:relative; z-index:2; padding:0 18px; margin-top:-30px}
+.card-name h2{margin:0; font:500 22px/.95 var(--hud); letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.82)}
+.card-name h2 b{display:block; font-weight:600; font-size:48px; line-height:.86; letter-spacing:.03em; color:#fff}
+.card-name p{margin:6px 0 0; font:600 13px/1.2 var(--cond); letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+.card-stats{display:grid; grid-template-columns:repeat(3,1fr); margin:14px 14px 0; border-top:1px solid var(--line-2); border-bottom:1px solid var(--line-2)}
+.card-stats div{padding:9px 4px 7px; text-align:center; border-left:1px solid var(--line)}
+.card-stats div:first-child{border-left:0}
+.card-stats b{display:block; font:600 32px/.9 var(--hud); letter-spacing:.02em}
+.card-stats span{display:block; font:600 10.5px/1.15 var(--cond); letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:3px}
+.card-hold{display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; padding:12px 16px 16px}
+.card-hold span{font:600 11px/1.15 var(--cond); letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.card-hold b{font:600 26px/1 var(--hud); color:var(--gold)}
+.card-hold i{display:block; height:6px; background:rgba(255,255,255,.1); position:relative; overflow:hidden}
+.card-hold i::after{content:""; position:absolute; inset:0 auto 0 0; width:var(--w); background:linear-gradient(90deg,var(--pink),var(--gold)); box-shadow:0 0 10px var(--pink)}
+.deal{animation:deal .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes deal{from{opacity:0; transform:translateY(18px) rotateY(-24deg) scale(.96)} to{opacity:1}}
+
+.ctrl{display:flex; align-items:center; gap:10px; width:min(350px,100%)}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; border:1px solid var(--line-2); background:rgba(0,0,0,.4); color:#fff;
+  padding:8px 14px; font:600 15px/1 var(--cond); letter-spacing:.12em; text-transform:uppercase; text-decoration:none;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px); transition:background .15s,border-color .15s}
+.btn:hover{background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.4)}
+.btn.icon{width:44px; height:40px; padding:0; font-size:20px}
+.btn.primary{flex:1; height:40px; background:linear-gradient(90deg,var(--pink),#FF5A9F); border-color:transparent; box-shadow:0 0 20px rgba(255,46,136,.35)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.primary.on{background:rgba(255,200,61,.14); border-color:var(--gold); color:var(--gold); box-shadow:none}
+.btn.gold{background:var(--gold); color:#1a1200; border-color:transparent}
+.count{font:600 20px/1 var(--hud); color:var(--muted); min-width:52px; text-align:center}
+
+/* ---------------------------------------------------------------- side: fit + attributes */
+.side{grid-area:side; display:flex; flex-direction:column; gap:16px}
+.chips{display:flex; flex-wrap:wrap; gap:6px; margin:-2px 0 12px}
+.chip{display:inline-flex; align-items:center; gap:6px; padding:4px 10px 3px; font:600 12.5px/1.1 var(--cond); letter-spacing:.06em; text-transform:uppercase;
+  border:1px solid rgba(71,224,143,.55); color:#BFF5D6; background:rgba(71,224,143,.10)}
+.chip.muted{border-color:var(--line-2); color:var(--muted); background:rgba(255,255,255,.04)}
+.chip svg{width:13px; height:13px}
+.fitrow{display:grid; grid-template-columns:26px 1fr; gap:10px; padding:9px 0; border-top:1px solid var(--line)}
+.fitrow:first-of-type{border-top:0; padding-top:2px}
+.fitrow svg{width:22px; height:22px; margin-top:1px}
+.fitrow b{display:block; font:700 11.5px/1.2 var(--cond); letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin-bottom:2px}
+.fitrow p{margin:0; font-size:14.2px; line-height:1.45}
+.fitrow.why svg{color:var(--gold)} .fitrow.fit svg{color:var(--good)} .fitrow.watch svg{color:var(--bad)}
+.attr{display:grid; grid-template-columns:112px 1fr auto; align-items:center; gap:10px; padding:5px 0}
+.attr .k{font:600 13.5px/1.15 var(--cond); letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.attr .bar{height:9px; background:rgba(255,255,255,.08); position:relative; clip-path:polygon(0 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+.attr .bar::after{content:""; position:absolute; inset:0 auto 0 0; width:var(--w); background:linear-gradient(90deg,var(--pink),var(--gold)); transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.attr .bar::before{content:""; position:absolute; top:-3px; bottom:-3px; left:50%; width:1px; background:rgba(255,255,255,.35); z-index:1}
+.attr .v{text-align:right; min-width:104px}
+.attr .v b{display:block; font:600 15px/1.1 var(--body)}
+.attr .v small{display:block; font:600 11.5px/1.1 var(--cond); letter-spacing:.06em; color:var(--muted)}
+.note{margin:10px 0 0; font:500 12.5px/1.4 var(--cond); letter-spacing:.03em; color:var(--dim)}
+
+/* ---------------------------------------------------------------- stat sheet */
+.sheet{display:grid; grid-template-columns:1fr 1.15fr 1.15fr; gap:22px; margin-top:22px}
+.vs{width:100%; border-collapse:collapse}
+.vs th{font:700 11px/1.2 var(--cond); letter-spacing:.14em; text-transform:uppercase; color:var(--dim); text-align:right; padding:0 0 6px}
+.vs th:first-child{text-align:left}
+.vs td{padding:8px 0; border-top:1px solid var(--line); text-align:right; font:600 22px/1 var(--hud); letter-spacing:.02em}
+.vs td:first-child{text-align:left; font:600 13.5px/1.2 var(--cond); letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.vs td.u{color:var(--muted)}
+.tag{display:inline-block; min-width:68px; text-align:center; padding:3px 6px 2px; font:700 11px/1.1 var(--cond); letter-spacing:.1em; text-transform:uppercase}
+.tag.up{color:#BFF5D6; background:rgba(71,224,143,.14); border:1px solid rgba(71,224,143,.5)}
+.tag.down{color:#FFD0D0; background:rgba(255,107,107,.13); border:1px solid rgba(255,107,107,.5)}
+.tag.same{color:var(--muted); border:1px solid var(--line-2)}
+.phase{display:flex; height:30px; gap:2px; margin:4px 0 12px}
+.phase div{position:relative; min-width:3px; display:flex; align-items:center; justify-content:center; font:600 18px/1 var(--hud); color:#fff; transition:flex-grow .6s cubic-bezier(.2,.8,.2,1)}
+.phase div:first-child{border-radius:3px 0 0 3px} .phase div:last-child{border-radius:0 3px 3px 0}
+.legend{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.legend div{border-left:3px solid var(--k); padding-left:8px}
+.legend b{display:block; font:600 22px/1 var(--hud)}
+.legend span{display:block; font:600 11.5px/1.25 var(--cond); letter-spacing:.06em; color:var(--muted); text-transform:uppercase}
+.strip{display:grid; grid-template-columns:repeat(20,1fr); gap:2px; margin:6px 0 4px; position:relative}
+.strip i{display:block; height:34px; background:rgba(255,46,136,var(--a)); border:1px solid rgba(255,255,255,.06); cursor:default}
+.strip i:nth-child(10){box-shadow:3px 0 0 -1px var(--gold)}
+.strip-ax{display:grid; grid-template-columns:repeat(20,1fr); gap:2px; font:600 11px/1 var(--cond); color:var(--dim); text-align:center}
+.strip-ax span:nth-child(10){color:var(--gold)}
+.big{display:flex; align-items:baseline; gap:10px; margin-top:10px}
+.big b{font:600 40px/.9 var(--hud); color:var(--gold)}
+.big span{font:500 13.5px/1.3 var(--body); color:var(--muted)}
+
+/* ---------------------------------------------------------------- sections */
+section.sec{padding:64px 0 0}
+.sec-head{max-width:820px; margin-bottom:20px}
+.sec-head h2{margin:8px 0 6px; font:500 44px/.95 var(--hud); letter-spacing:.03em; text-transform:uppercase}
+.sec-head p{margin:0; color:#C2CFDC; font-size:15.5px}
+.sec-head, .intro{text-shadow:0 1px 3px rgba(0,0,0,.9), 0 0 18px rgba(0,0,0,.75)}
+.mission{display:grid; grid-template-columns:1.05fr 1fr; gap:22px; align-items:start}
+.depts{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.depts h4{grid-column:1/-1; margin:6px 0 -2px; font:700 12px/1 var(--cond); letter-spacing:.18em; text-transform:uppercase; color:var(--muted)}
+.dt{position:relative; padding:12px 12px 11px; background:rgba(255,255,255,.035); border:1px solid var(--line)}
+.dt.gap{border-color:rgba(255,46,136,.6); background:linear-gradient(180deg,rgba(255,46,136,.16),rgba(255,46,136,.03))}
+.dt .lab{display:flex; justify-content:space-between; gap:6px}
+.dt .flag{font:700 10.5px/1 var(--cond); letter-spacing:.14em; padding:3px 5px 2px; color:#fff; background:var(--pink)}
+.dt .flag.ok{background:rgba(71,224,143,.2); color:#BFF5D6}
+.dt .flag.mid{background:rgba(255,255,255,.1); color:var(--muted)}
+.dt b{display:block; font:600 44px/.85 var(--hud); margin:8px 0 2px}
+.dt b small{font-size:20px; color:var(--muted); letter-spacing:.04em}
+.pips{display:flex; gap:3px; margin:6px 0 8px}
+.pips i{flex:1; height:6px; background:rgba(255,255,255,.12)}
+.pips i.me{background:var(--text); box-shadow:0 0 8px rgba(255,255,255,.6)}
+.dt.gap .pips i.me{background:var(--pink); box-shadow:0 0 8px var(--pink)}
+.dt p{margin:0; font:500 13px/1.3 var(--cond); letter-spacing:.03em; color:var(--muted)}
+.slots{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.slot{position:relative; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-align:center; padding:12px 8px;
+  border:1px dashed rgba(255,46,136,.55); background:rgba(255,46,136,.05)}
+.slot .av{width:58px; height:58px}
+.slot b{font:600 15px/1.15 var(--body)}
+.slot small{font:600 11.5px/1.2 var(--cond); letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.slot.full{border-style:solid; border-color:var(--gold); background:linear-gradient(180deg,rgba(255,200,61,.12),rgba(255,200,61,.02))}
+.slot .x{position:absolute; right:4px; top:4px; width:26px; height:26px; border:0; background:rgba(0,0,0,.4); cursor:pointer; color:var(--muted); font-size:16px; line-height:1}
+.slot .x:hover{color:#fff; background:rgba(255,107,107,.4)}
+.slot .empty{font:600 34px/1 var(--hud); color:rgba(255,46,136,.6)}
+.slot.ind{border-color:var(--line-2); background:rgba(255,255,255,.025); min-height:0; padding:10px; justify-content:flex-start}
+.slot.ind small{text-transform:none; letter-spacing:.02em; font-size:12.5px; font-weight:500}
+.objectives{display:flex; flex-direction:column; gap:8px; margin:16px 0}
+.obj{display:grid; grid-template-columns:26px 1fr auto; gap:10px; align-items:center; padding:9px 12px; border:1px solid var(--line); background:rgba(255,255,255,.03)}
+.obj .box{width:22px; height:22px; border:2px solid var(--line-2); display:grid; place-items:center}
+.obj.done{border-color:rgba(71,224,143,.55); background:rgba(71,224,143,.08)}
+.obj.done .box{border-color:var(--good); background:var(--good); color:#03100A}
+.obj b{display:block; font:600 15px/1.2 var(--body)}
+.obj small{display:block; font:500 12.5px/1.25 var(--cond); letter-spacing:.03em; color:var(--muted)}
+.obj .who{font:600 12.5px/1.2 var(--cond); letter-spacing:.06em; text-transform:uppercase; color:var(--good); text-align:right}
+.score-line{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.score-line .st{font:600 26px/1 var(--hud); letter-spacing:.04em}
+.score-line .st em{font-style:normal; color:var(--gold)}
+.btns{display:flex; gap:8px; flex-wrap:wrap}
+
+.lrow{display:grid; grid-template-columns:110px 1fr; gap:14px; align-items:center; margin-bottom:12px}
+.lrow h4{margin:0; font:600 24px/1 var(--hud); letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.ltiles{display:grid; grid-template-columns:repeat(10,1fr); gap:6px}
+.lt{position:relative; padding:10px 9px 9px; min-height:96px; background:rgba(5,10,18,.9); text-align:left; font:inherit; border:1px solid var(--line); display:flex; flex-direction:column; gap:4px; overflow:hidden}
+.lt .n{font:600 22px/1 var(--hud); color:var(--dim)}
+.lt b{font:600 13.5px/1.15 var(--body); color:rgba(243,246,250,.6)}
+.lt .st{margin-top:auto; display:flex; align-items:center; gap:5px; font:700 11px/1.1 var(--cond); letter-spacing:.08em; text-transform:uppercase; color:var(--dim)}
+.lt .st svg{width:12px; height:12px; flex:none}
+.lt.locked::after{content:""; position:absolute; inset:0; background:repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 6px, transparent 6px 12px); pointer-events:none}
+.lt.royal{border-color:rgba(61,165,255,.55)}
+.lt.royal b{color:#fff} .lt.royal .st{color:var(--blue)}
+.lt.open{border-color:var(--gold); background:linear-gradient(180deg,rgba(255,200,61,.22),rgba(255,200,61,.05)); box-shadow:0 0 24px rgba(255,200,61,.25); cursor:pointer}
+.lt.open b{color:#fff} .lt.open .n{color:var(--gold)} .lt.open .st{color:var(--gold)}
+.lt.open:hover{filter:brightness(1.12)}
+
+.steps{display:grid; grid-template-columns:repeat(5,1fr); gap:12px}
+.step{padding:16px 16px 18px}
+.step .no{font:600 46px/.8 var(--hud); color:transparent; -webkit-text-stroke:1.2px var(--pink-2)}
+.step h3{margin:8px 0 6px; font:600 21px/1.02 var(--hud); letter-spacing:.05em; text-transform:uppercase}
+.step p{margin:0; font-size:14px; line-height:1.45; color:#D4DEE8}
+.callout{display:grid; grid-template-columns:1.2fr 1fr; gap:22px; margin-top:22px; align-items:stretch}
+.callout .panel{display:flex; flex-direction:column; justify-content:center}
+.callout h3{margin:4px 0 8px; font:500 34px/.95 var(--hud); letter-spacing:.04em; text-transform:uppercase; color:var(--gold)}
+.callout p{margin:0; font-size:15.5px; color:#D4DEE8}
+.facts{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px}
+.facts b{display:block; font:600 34px/.9 var(--hud)}
+.facts span{font:600 11.5px/1.2 var(--cond); letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+
+footer{margin-top:64px; padding:28px 0 40px; background:rgba(2,6,10,.86); border-top:1px solid var(--line)}
+footer .cols{display:grid; grid-template-columns:1.1fr 1.4fr; gap:28px}
+footer p{margin:0 0 8px; font-size:13.5px; color:var(--muted)}
+footer h4{margin:0 0 8px; font:700 12px/1 var(--cond); letter-spacing:.18em; text-transform:uppercase; color:var(--dim)}
+footer ul{margin:0; padding:0; list-style:none; columns:2; column-gap:22px}
+footer li{font-size:12px; line-height:1.4; color:var(--dim); margin-bottom:5px; break-inside:avoid}
+footer li a{color:var(--muted)}
+
+#tip{position:fixed; z-index:50; pointer-events:none; max-width:260px; padding:7px 10px; font:500 13px/1.35 var(--body); background:#0B1424; border:1px solid var(--line-2); box-shadow:0 8px 24px rgba(0,0,0,.5); opacity:0; transition:opacity .12s}
+#tip.on{opacity:1}
+#toast{position:fixed; left:50%; bottom:22px; z-index:60; transform:translate(-50%,30px); opacity:0; padding:11px 18px; font:600 15px/1.3 var(--cond); letter-spacing:.06em; background:#0B1424; border:1px solid var(--gold); color:#fff; box-shadow:0 10px 30px rgba(0,0,0,.55); transition:all .25s; max-width:calc(100vw - 32px); text-align:center}
+#toast.on{opacity:1; transform:translate(-50%,0)}
+
+/* ---------------------------------------------------------------- responsive */
+@media (max-width:1240px){
+  .stage{grid-template-columns:minmax(340px,1fr) minmax(330px,1fr); grid-template-areas:"board board" "card side"}
+  .rows{flex-direction:row; overflow-x:auto; gap:6px; padding-bottom:6px; scroll-snap-type:x proximity}
+  .row{grid-template-columns:none; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:92px; max-width:92px; padding:8px 6px; text-align:center; scroll-snap-align:start}
+  .row:hover{transform:translateY(-2px)}
+  .row .r{font-size:20px; position:absolute; left:6px; top:5px}
+  .row .av{width:46px; height:46px}
+  .row .nm b{font-size:13px; max-width:80px}
+  .row .nm small{display:none}
+  .row .pc b{font-size:16px}
+  .row .pc i{width:60px}
+  .row[aria-selected="true"]::before{left:-1px; right:-1px; top:auto; bottom:-1px; width:auto; height:3px}
+  .row .tick{right:6px; top:6px}
+  .row .full{display:none}
+  .row .short{display:inline}
+  .h-wide{display:none} .h-narrow{display:inline}
+  .sheet{grid-template-columns:1fr 1fr}
+  .sheet > :last-child{grid-column:1/-1}
+  .steps{grid-template-columns:repeat(3,1fr)}
+  .ltiles{grid-template-columns:repeat(5,1fr)}
+}
+@media (max-width:900px){
+  .top-in{grid-template-columns:1fr auto; padding:8px 16px; gap:10px}
+  .tabs{grid-column:1/-1; grid-row:2; justify-self:stretch; transform:none}
+  .tabs button{flex:1; transform:none}
+  .tabs button > span{transform:none}
+  .purse div{padding:4px 8px}
+  .purse b{font-size:18px}
+  .wrap{padding:0 16px}
+  .intro h1{font-size:28px}
+  .stage{grid-template-columns:minmax(0,1fr); grid-template-areas:"board" "card" "side"; gap:16px}
+  .mission,.callout,.sheet{grid-template-columns:minmax(0,1fr)}
+  .sheet > :last-child{grid-column:auto}
+  .steps{grid-template-columns:1fr 1fr}
+  .lrow{grid-template-columns:1fr}
+  .sec-head h2{font-size:36px}
+  footer .cols{grid-template-columns:1fr}
+  footer ul{columns:1}
+}
+@media (max-width:560px){
+  .brand span{display:none}
+  .brand{gap:8px}
+  .brand svg{width:30px; height:30px}
+  .brand b{font-size:23px; white-space:nowrap}
+  .purse div:nth-child(2){display:none}
+  .purse div{padding:4px 7px}
+  .purse b{font-size:16px}
+  .purse span{font-size:9.5px; letter-spacing:.1em}
+  .depts{grid-template-columns:1fr 1fr 1fr; gap:6px}
+  .dt{padding:9px 8px}
+  .dt b{font-size:34px}
+  .dt p{font-size:11.5px}
+  .dt .lab{flex-direction:column; gap:4px; align-items:flex-start}
+  .slots{grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px}
+  .slot{min-height:132px; padding:10px 4px}
+  .slot .av{width:48px; height:48px}
+  .slot b{font-size:13px}
+  .steps{grid-template-columns:1fr}
+  .ltiles{grid-template-columns:repeat(2,1fr)}
+  .facts b{font-size:28px}
+  .attr{grid-template-columns:96px 1fr auto}
+  .attr .v{min-width:92px}
+  .card-name h2 b{font-size:42px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important; transition:none !important; scroll-behavior:auto !important}
+}
+</style>
+</head>
+<body>
+<div class="ground" aria-hidden="true">
+  <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <pattern id="mow" width="132" height="132" patternUnits="userSpaceOnUse">
+        <rect width="66" height="132" fill="#145530"/><rect x="66" width="66" height="132" fill="#196236"/>
+      </pattern>
+      <pattern id="mow2" width="132" height="132" patternUnits="userSpaceOnUse">
+        <rect width="132" height="66" fill="#000" fill-opacity=".07"/>
+      </pattern>
+      <radialGradient id="glow" cx="50%" cy="48%" r="58%">
+        <stop offset="0" stop-color="#C8FFD2" stop-opacity=".18"/>
+        <stop offset=".5" stop-color="#000" stop-opacity="0"/>
+        <stop offset="1" stop-color="#000" stop-opacity=".62"/>
+      </radialGradient>
+      <linearGradient id="pitch" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#DCC28D"/><stop offset=".5" stop-color="#CFB078"/><stop offset="1" stop-color="#BE9B5E"/>
+      </linearGradient>
+    </defs>
+    <rect width="1600" height="1000" fill="#04170D"/>
+    <ellipse cx="800" cy="500" rx="800" ry="640" fill="#0E3D21"/>
+    <ellipse cx="800" cy="500" rx="745" ry="590" fill="url(#mow)"/>
+    <ellipse cx="800" cy="500" rx="745" ry="590" fill="url(#mow2)"/>
+    <ellipse cx="800" cy="500" rx="745" ry="590" fill="none" stroke="#F6F2E6" stroke-opacity=".6" stroke-width="5"/>
+    <ellipse cx="800" cy="500" rx="752" ry="597" fill="none" stroke="#FF2E88" stroke-opacity=".35" stroke-width="2"/>
+    <ellipse cx="800" cy="500" rx="372" ry="300" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="3" stroke-dasharray="14 16"/>
+    <g transform="translate(800 500)">
+      <rect x="-30" y="-160" width="60" height="320" rx="3" fill="url(#pitch)" opacity=".7"/>
+      <g stroke="#fff" stroke-opacity=".85" stroke-width="2.4" fill="none">
+        <path d="M-44 -122 H44 M-44 122 H44 M-22 -140 H22 M-22 140 H22 M-22 -150 V-122 M22 -150 V-122 M-22 150 V122 M22 150 V122"/>
+      </g>
+      <g fill="#F2E7CF"><rect x="-7" y="-143" width="3" height="6"/><rect x="-1.5" y="-143" width="3" height="6"/><rect x="4" y="-143" width="3" height="6"/>
+        <rect x="-7" y="137" width="3" height="6"/><rect x="-1.5" y="137" width="3" height="6"/><rect x="4" y="137" width="3" height="6"/></g>
+    </g>
+    <ellipse cx="800" cy="500" rx="980" ry="760" fill="url(#glow)"/>
+  </svg>
+  <div class="lights"></div><div class="scan"></div><div class="shade"></div>
+</div>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 3 57 17.5v29L32 61 7 46.5v-29z" fill="none" stroke="#FF2E88" stroke-width="3"/><circle cx="32" cy="32" r="14" fill="#fff"/><path d="M22.5 24.5c6.5 4.2 6.5 10.8 0 15M41.5 24.5c-6.5 4.2-6.5 10.8 0 15" stroke="#FF2E88" stroke-width="2.4" fill="none" stroke-dasharray="3 2"/></svg>
+      <div><b>PRESSURE-PROOF</b><span>Auction board · IPL 2027 · Rajasthan Royals</span></div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Choose a list">
+      <button role="tab" id="tab-bat" data-role="bat" aria-selected="true"><span>Batters <small>Top 10</small></span></button>
+      <button role="tab" id="tab-bowl" data-role="bowl" aria-selected="false"><span>Bowlers <small>Top 10</small></span></button>
+    </div>
+    <div class="purse" aria-label="Royals auction budget">
+      <div class="gold"><b>&#8377;27.05 Cr</b><span>Purse</span></div>
+      <div><b>6</b><span>Places</span></div>
+      <div><b>3</b><span>Overseas</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <span class="kicker">SupeRR Selector · Season 2 · Round 1</span>
+    <h1>Who holds their nerve, <em>and who can the Royals buy?</em></h1>
+    <p>The ten most reliable batters and bowlers under pressure that are in the IPL 2027 auction pool.</p>
+  </div>
+
+  <div class="stage">
+    <section class="panel board" aria-label="Auction board">
+      <h3 class="ph"><span id="board-title">Auction board</span><small>Top-10 hold<br>in 200 replays</small></h3>
+      <div class="rows" id="rows" role="listbox" aria-label="Players"></div>
+      <p class="hint"><span class="h-wide">Pick a player, or use <kbd>&larr;</kbd> <kbd>&rarr;</kbd>.</span><span class="h-narrow">Swipe for all ten, tap to open a card.</span> A gold dot marks your auction picks.</p>
+    </section>
+
+    <div class="center">
+      <div class="card-wrap" id="card-wrap"></div>
+      <div class="ctrl">
+        <button class="btn icon" id="prev" aria-label="Previous player">&#8249;</button>
+        <span class="count" id="count">1 / 10</span>
+        <button class="btn icon" id="next" aria-label="Next player">&#8250;</button>
+        <button class="btn primary" id="add">+ Add to picks</button>
+      </div>
+    </div>
+
+    <div class="side">
+      <section class="panel" aria-label="Squad fit">
+        <h3 class="ph">Squad fit <small id="fit-sub"></small></h3>
+        <div class="chips" id="needs"></div>
+        <div id="fit"></div>
+      </section>
+      <section class="panel" aria-label="Attributes">
+        <h3 class="ph">Attributes <small id="attr-sub"></small></h3>
+        <div id="attrs"></div>
+        <p class="note">Bars show the share of rated players this one beats. The tick marks the middle of the pool.</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <section class="panel" aria-label="Under pressure against usual">
+      <h3 class="ph">Under pressure <small>against the player's usual</small></h3>
+      <table class="vs" id="vs"></table>
+    </section>
+    <section class="panel" aria-label="When the pressure balls come">
+      <h3 class="ph">When it bites <small>share of pressure balls by phase</small></h3>
+      <div class="phase" id="phase"></div>
+      <div class="legend" id="legend"></div>
+    </section>
+    <section class="panel" aria-label="How firmly the place is held">
+      <h3 class="ph">200 replays <small>finishing place each time</small></h3>
+      <div class="strip" id="strip"></div>
+      <div class="strip-ax" id="strip-ax"></div>
+      <div class="big" id="hold"></div>
+    </section>
+  </div>
+
+  <section class="sec" id="mission">
+    <div class="sec-head">
+      <span class="kicker">Your move</span>
+      <h2>Build the Royals' auction</h2>
+      <p>After the 17 November retentions the Royals have 6 places, 3 of them for overseas players, and &#8377;27.05 crore. Every player on these lists is from overseas, so the real choice is three names. Pick them to cover the gaps below.</p>
+    </div>
+    <div class="mission">
+      <section class="panel" aria-label="Where the Royals lose under pressure">
+        <h3 class="ph">Scouting the Royals <small>IPL 2026, pressure balls only, rank of 10 sides</small></h3>
+        <div class="depts" id="depts"></div>
+      </section>
+      <section class="panel" aria-label="Your auction picks">
+        <h3 class="ph">Your picks <small id="picks-sub">3 overseas places</small></h3>
+        <div class="slots" id="slots"></div>
+        <div class="objectives" id="objs"></div>
+        <div class="score-line">
+          <div class="st" id="score">0 of 3 gaps covered</div>
+          <div class="btns">
+            <button class="btn gold" id="analyst">Load analyst's picks</button>
+            <button class="btn" id="clear">Clear</button>
+          </div>
+        </div>
+        <div class="slots" style="margin-top:14px">
+          <div class="slot ind" style="grid-column:1/-1"><small><b style="font:700 11.5px var(--cond); letter-spacing:.14em; text-transform:uppercase; color:var(--muted)">3 Indian places</b><br>No Indian player in the auction pool rates above average under pressure. Fill these on role and price.</small></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="sec" id="locked">
+    <div class="sec-head">
+      <span class="kicker">Off the market</span>
+      <h2>19 of our top 20 can't be bought</h2>
+      <p>Our ten best batters and ten best bowlers under pressure, before anyone was ruled out. On 17 November other franchises kept 18 of them, and one is already a Royal. One reached the auction.</p>
+    </div>
+    <div id="lrows"></div>
+  </section>
+
+  <section class="sec" id="method">
+    <div class="sec-head">
+      <span class="kicker">How the rating works</span>
+      <h2>Five steps from ball to board</h2>
+      <p>Built on 200,961 deliveries from 867 IPL and T20I matches, 2022 to 2026. The full method, tests and sources are in the report.</p>
+    </div>
+    <div class="steps">
+      <div class="panel step"><div class="no">01</div><h3>How much does the ball matter?</h3><p>Before every ball a model estimates the batting side's chance of winning. A ball matters when a four, a dot or a wicket would swing it. The last ball of the 2023 IPL final mattered 14.6 times as much as an average ball.</p></div>
+      <div class="panel step"><div class="no">02</div><h3>Five kinds of pressure</h3><p>The scoreboard is one source. Big matches, walking in during a collapse, being hit for boundaries, a squeeze of dot balls and trailing in the game are the others. A new batter arriving in a crisis scores 14 runs per 100 balls slower.</p></div>
+      <div class="panel step"><div class="no">03</div><h3>Against an average player</h3><p>Every ball is compared with what an average player does in the same spot: same over, wickets, target, ground and type of bowler, adjusted for the strength of the opposition. IPL and international cricket then sit in one table.</p></div>
+      <div class="panel step"><div class="no">04</div><h3>Three questions</h3><p>How good on pressure balls, how often the player comes through, and how often it goes badly wrong. Each counts for as much as it proved repeatable in the data. Short records are pulled towards average.</p></div>
+      <div class="panel step"><div class="no">05</div><h3>Try to break it</h3><p>200 rebuilds on different mixes of matches, two halves of the data rated apart, and a test of whether 2022&ndash;24 predicts 2025&ndash;26. It does for bowlers. It does not for batters, and the report says so.</p></div>
+    </div>
+    <div class="callout">
+      <div class="panel"><span class="kicker">Biggest finding</span><h3>There is no clutch gene</h3><p>Once luck is allowed for, no player is reliably better under pressure than their own usual standard. The players who deliver are good players who don't get worse, so the ratings reward doing it match after match.</p></div>
+      <div class="panel">
+        <div class="facts"><div><b>200,961</b><span>deliveries</span></div><div><b>867</b><span>matches</span></div><div><b>200</b><span>replays per list</span></div></div>
+        <a class="btn primary" href="Pressure-Proof_Methodology_Report.pdf" target="_blank" rel="noopener" style="flex:none; height:46px">Read the full methodology (PDF)</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap cols">
+    <div>
+      <h4>About</h4>
+      <p>Analysis and build by Shivam Kedia for Round 1 of SupeRR Selector Season 2. An independent entry: not affiliated with or endorsed by Rajasthan Royals, the IPL or Unstop.</p>
+      <p>Lists hold players in the IPL 2027 auction pool (released on 17 November 2026, or in no IPL 2026 squad) who played in 2026, are not retired or barred, and are not Pakistan players. Retention lists are from news reports; players must still register by 23 November.</p>
+    </div>
+    <div>
+      <h4>Photo credits</h4>
+      <p>Photos from Wikimedia Commons, used under their licences. A silhouette marks a player with no freely licensed photo.</p>
+      <ul id="credits"></ul>
+    </div>
+  </div>
+</footer>
+
+<div id="tip" role="tooltip"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const DATA = {"roles":{"bat":{"players":[{"id":"bat-pathum-nissanka","name":"Pathum Nissanka","rank":1,"nation":"Sri Lanka","code":"SL","colour":"#2453B8","role":"Right-hand opener","status":"Released by DC","released":true,"why":"The highest-rated batter the Royals can bid for, with the biggest record on the board (638 pressure balls). Scores faster under pressure than usual (144 against 129 per 100 balls) and is out once every 28 pressure balls, against 22 for the average batter.","fit":"Cover rather than need: two-thirds of Nissanka's pressure balls come in the powerplay, where Jaiswal and Sooryavanshi already make the Royals the league's second-best side (195 per 100 balls).","watch":"Only 16% of the pressure record is in the IPL, and an overseas place spent on a reserve opener is hard to justify.","needs":[],"photo":null,"n_press":638,"matches":58,"ipl":"16","level":"+8.0","delivery":"62","bust":"10","p10":"82","hist":[45,26,10,21,17,11,10,9,8,7,10,9,6,4,0,2,1,0,2,0],"runs_out":2,"attrs":[{"k":"Pressure level","v":"+8.0 runs/100","p":82},{"k":"Comes through","v":"62%","p":80},{"k":"Rarely fails","v":"10% go wrong","p":62},{"k":"Usual level","v":"+3.5 runs/100","p":65},{"k":"Record size","v":"638 balls","p":94}],"vs":[{"k":"Strike rate","press":"144","usual":"129","better":true},{"k":"Balls per dismissal","press":"28","usual":"21","better":true}],"phases":[{"k":"Powerplay","share":"67","val":"147","n":430,"unit":"strike rate"},{"k":"Middle","share":"26","val":"131","n":166,"unit":"strike rate"},{"k":"Death","share":"7","val":"164","n":42,"unit":"strike rate"}],"analyst":false},{"id":"bat-sikandar-raza","name":"Sikandar Raza","rank":2,"nation":"Zimbabwe","code":"ZIM","colour":"#C8102E","role":"Right-hand No. 4 · off-spin","status":"Not in an IPL squad","released":false,"why":"Worth 9 runs per 100 balls more than an average batter in the same pressure situations: the highest level of any batter the Royals can bid for, over 405 pressure balls.","fit":"Death-overs hitting is the Royals' one batting weakness (159 per 100 balls against a league 177), and Hetmyer has gone. Raza strikes at 195 at the death (73 balls) and bowls middle-overs off-spin at 6.4 an over under pressure. One overseas place, two jobs.","watch":"Only 15% of the pressure record is in the IPL; the rest is for Zimbabwe.","needs":["death_hit"],"photo":{"src":"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Sikandar_Raza_2022.jpg/500px-Sikandar_Raza_2022.jpg","pos":"50% 18%","artist":"Storm machine","licence":"CC BY-SA 4.0","licence_url":"https://creativecommons.org/licenses/by-sa/4.0","page":"https://commons.wikimedia.org/wiki/File:Sikandar_Raza_2022.jpg","file":"Sikandar Raza 2022.jpg"},"n_press":405,"matches":41,"ipl":"15","level":"+9.0","delivery":"62","bust":"13","p10":"87","hist":[39,25,22,14,13,13,16,12,9,10,2,5,5,3,2,4,1,0,1,0],"runs_out":4,"attrs":[{"k":"Pressure level","v":"+9.0 runs/100","p":85},{"k":"Comes through","v":"62%","p":80},{"k":"Rarely fails","v":"13% go wrong","p":35},{"k":"Usual level","v":"+7.9 runs/100","p":85},{"k":"Record size","v":"405 balls","p":78}],"vs":[{"k":"Strike rate","press":"133","usual":"138","better":false},{"k":"Balls per dismissal","press":"25","usual":"18","better":true}],"phases":[{"k":"Powerplay","share":"17","val":"131","n":67,"unit":"strike rate"},{"k":"Middle","share":"65","val":"116","n":265,"unit":"strike rate"},{"k":"Death","share":"18","val":"195","n":73,"unit":"strike rate"}],"analyst":true},{"id":"bat-kusal-mendis","name":"Kusal Mendis","rank":3,"nation":"Sri Lanka","code":"SL","colour":"#2453B8","role":"Right-hand opener · wicketkeeper","status":"Not in an IPL squad","released":false,"why":"Rarely fails: only 4% of pressure matches go badly wrong, against 12% for the average batter, and comes through in 62%.","fit":"Insurance: opens and keeps wicket, so covers Jaiswal or Jurel. The Royals' top order is already their strength.","watch":"A modest pressure level, and almost none of the record is in the IPL.","needs":[],"photo":null,"n_press":488,"matches":51,"ipl":"1","level":"+2.8","delivery":"62","bust":"4","p10":"81","hist":[21,14,24,26,20,12,10,14,11,10,6,6,4,6,3,4,4,2,1,1],"runs_out":1,"attrs":[{"k":"Pressure level","v":"+2.8 runs/100","p":58},{"k":"Comes through","v":"62%","p":82},{"k":"Rarely fails","v":"4% go wrong","p":100},{"k":"Usual level","v":"+1.4 runs/100","p":50},{"k":"Record size","v":"488 balls","p":85}],"vs":[{"k":"Strike rate","press":"139","usual":"132","better":true},{"k":"Balls per dismissal","press":"26","usual":"21","better":true}],"phases":[{"k":"Powerplay","share":"61","val":"135","n":296,"unit":"strike rate"},{"k":"Middle","share":"34","val":"152","n":164,"unit":"strike rate"},{"k":"Death","share":"6","val":"114","n":28,"unit":"strike rate"}],"analyst":false},{"id":"bat-kamindu-mendis","name":"Kamindu Mendis","rank":4,"nation":"Sri Lanka","code":"SL","colour":"#2453B8","role":"Left-hand No. 5","status":"Released by SRH","released":true,"why":"Comes through in 62% of pressure matches and only 5% go badly wrong.","fit":"A left-handed finisher: 31% of Kamindu's pressure balls are at the death, at a strike rate of 155 (60 balls). That is the Royals' gap, though Raza hits harder there.","watch":"195 pressure balls is a thin record, and the pressure level is modest.","needs":[],"photo":null,"n_press":195,"matches":27,"ipl":"9","level":"+2.0","delivery":"62","bust":"5","p10":"78","hist":[14,20,22,14,26,13,19,11,11,5,11,4,8,3,3,3,3,2,2,0],"runs_out":6,"attrs":[{"k":"Pressure level","v":"+2.0 runs/100","p":51},{"k":"Comes through","v":"62%","p":85},{"k":"Rarely fails","v":"5% go wrong","p":96},{"k":"Usual level","v":"+0.3 runs/100","p":41},{"k":"Record size","v":"195 balls","p":21}],"vs":[{"k":"Strike rate","press":"135","usual":"127","better":true},{"k":"Balls per dismissal","press":"22","usual":"18","better":true}],"phases":[{"k":"Powerplay","share":"10","val":"100","n":19,"unit":"strike rate"},{"k":"Middle","share":"59","val":"131","n":116,"unit":"strike rate"},{"k":"Death","share":"31","val":"155","n":60,"unit":"strike rate"}],"analyst":false},{"id":"bat-towhid-hridoy","name":"Towhid Hridoy","rank":5,"nation":"Bangladesh","code":"BAN","colour":"#00805A","role":"Right-hand No. 4","status":"Not in an IPL squad","released":false,"why":"The hardest batter on the board to remove: out once every 44 pressure balls, against 22 for the average batter, and comes through in 65% of pressure matches.","fit":"A No. 4 for the middle overs, where the Royals scored at 145 under pressure against a league 148. Also strikes at 180 at the death (40 balls). Reported as registered for the auction.","watch":"219 pressure balls is a thin record, and none of it is in the IPL.","needs":["death_hit"],"photo":{"src":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Towhid_Hridoy.jpg/500px-Towhid_Hridoy.jpg","pos":"50% 20%","artist":"Niriho khoka","licence":"CC BY 4.0","licence_url":"https://creativecommons.org/licenses/by/4.0","page":"https://commons.wikimedia.org/wiki/File:Towhid_Hridoy.jpg","file":"Towhid Hridoy.jpg"},"n_press":219,"matches":27,"ipl":"0","level":"+2.7","delivery":"65","bust":"11","p10":"69","hist":[18,22,14,12,12,16,7,16,8,12,14,9,8,4,1,6,5,3,2,2],"runs_out":9,"attrs":[{"k":"Pressure level","v":"+2.7 runs/100","p":56},{"k":"Comes through","v":"65%","p":92},{"k":"Rarely fails","v":"11% go wrong","p":59},{"k":"Usual level","v":"−0.4 runs/100","p":35},{"k":"Record size","v":"219 balls","p":33}],"vs":[{"k":"Strike rate","press":"136","usual":"123","better":true},{"k":"Balls per dismissal","press":"44","usual":"21","better":true}],"phases":[{"k":"Powerplay","share":"23","val":"120","n":50,"unit":"strike rate"},{"k":"Middle","share":"59","val":"129","n":129,"unit":"strike rate"},{"k":"Death","share":"18","val":"180","n":40,"unit":"strike rate"}],"analyst":false},{"id":"bat-ryan-burl","name":"Ryan Burl","rank":6,"nation":"Zimbabwe","code":"ZIM","colour":"#C8102E","role":"Left-hand No. 5","status":"Not in an IPL squad","released":false,"why":"Lifts when it matters: 139 per 100 balls under pressure against 111 otherwise, the biggest lift on the board, and worth 7 runs per 100 above average.","fit":"A left-hander for the middle overs against spin, where the Royals scored at 149 under pressure against a league 155. Burl strikes at 169 against spin under pressure (110 balls).","watch":"Comes through in 54% of pressure matches, under the 56% norm: big days more than steady ones. No IPL record.","needs":[],"photo":null,"n_press":242,"matches":29,"ipl":"0","level":"+6.9","delivery":"54","bust":"8","p10":"61","hist":[17,15,18,14,11,6,8,11,11,10,5,6,12,10,7,5,8,6,4,5],"runs_out":11,"attrs":[{"k":"Pressure level","v":"+6.9 runs/100","p":77},{"k":"Comes through","v":"54%","p":46},{"k":"Rarely fails","v":"8% go wrong","p":86},{"k":"Usual level","v":"+1.0 runs/100","p":50},{"k":"Record size","v":"242 balls","p":42}],"vs":[{"k":"Strike rate","press":"139","usual":"111","better":true},{"k":"Balls per dismissal","press":"20","usual":"20","better":null}],"phases":[{"k":"Powerplay","share":"6","val":"129","n":14,"unit":"strike rate"},{"k":"Middle","share":"67","val":"130","n":162,"unit":"strike rate"},{"k":"Death","share":"27","val":"164","n":66,"unit":"strike rate"}],"analyst":false},{"id":"bat-mark-chapman","name":"Mark Chapman","rank":7,"nation":"New Zealand","code":"NZ","colour":"#5B6577","role":"Left-hand No. 5","status":"Not in an IPL squad","released":false,"why":"Worth 5 runs per 100 balls above average and comes through in 60% of pressure matches.","fit":"A left-handed middle-order option: 71% of Chapman's pressure balls come in the middle overs.","watch":"Scores slower under pressure (139 against 148 usually), and 13% of pressure matches go badly wrong. No IPL record.","needs":[],"photo":null,"n_press":234,"matches":30,"ipl":"0","level":"+5.4","delivery":"60","bust":"13","p10":"60","hist":[12,18,7,13,13,12,9,10,11,14,3,7,7,8,10,3,5,5,5,2],"runs_out":26,"attrs":[{"k":"Pressure level","v":"+5.4 runs/100","p":69},{"k":"Comes through","v":"60%","p":73},{"k":"Rarely fails","v":"13% go wrong","p":40},{"k":"Usual level","v":"+4.7 runs/100","p":70},{"k":"Record size","v":"234 balls","p":38}],"vs":[{"k":"Strike rate","press":"139","usual":"148","better":false},{"k":"Balls per dismissal","press":"23","usual":"19","better":true}],"phases":[{"k":"Powerplay","share":"12","val":"100","n":27,"unit":"strike rate"},{"k":"Middle","share":"71","val":"142","n":167,"unit":"strike rate"},{"k":"Death","share":"17","val":"153","n":40,"unit":"strike rate"}],"analyst":false},{"id":"bat-mohammad-nabi","name":"Mohammad Nabi","rank":8,"nation":"Afghanistan","code":"AFG","colour":"#1D6FD8","role":"Right-hand No. 6 · off-spin","status":"Not in an IPL squad","released":false,"why":"A finisher's record: 46% of Nabi's pressure balls come at the death, at a strike rate of 186.","fit":"Aimed at the Royals' death-hitting gap, with off-spin as a second skill.","watch":"Only 159 pressure balls, and comes through in just 52% of pressure matches.","needs":["death_hit"],"photo":{"src":"https://upload.wikimedia.org/wikipedia/commons/4/49/Mohammad_Nabi-Australia.jpg","pos":"50% 22%","artist":"K Popal","licence":"CC BY-SA 3.0","licence_url":"https://creativecommons.org/licenses/by-sa/3.0","page":"https://commons.wikimedia.org/wiki/File:Mohammad_Nabi-Australia.jpg","file":"Mohammad Nabi-Australia.jpg"},"n_press":159,"matches":24,"ipl":"8","level":"+2.8","delivery":"52","bust":"6","p10":"55","hist":[3,9,9,15,10,16,13,15,6,14,9,8,11,8,8,7,8,5,4,6],"runs_out":16,"attrs":[{"k":"Pressure level","v":"+2.8 runs/100","p":57},{"k":"Comes through","v":"52%","p":32},{"k":"Rarely fails","v":"6% go wrong","p":95},{"k":"Usual level","v":"+0.9 runs/100","p":47},{"k":"Record size","v":"159 balls","p":3}],"vs":[{"k":"Strike rate","press":"145","usual":"125","better":true},{"k":"Balls per dismissal","press":"18","usual":"16","better":true}],"phases":[{"k":"Powerplay","share":"5","val":"238","n":8,"unit":"strike rate"},{"k":"Middle","share":"49","val":"96","n":78,"unit":"strike rate"},{"k":"Death","share":"46","val":"186","n":73,"unit":"strike rate"}],"analyst":false},{"id":"bat-harry-tector","name":"Harry Tector","rank":9,"nation":"Ireland","code":"IRE","colour":"#169B62","role":"Right-hand No. 4","status":"Not in an IPL squad","released":false,"why":"On the list for consistency: comes through in 65% of pressure matches and only 6% go badly wrong.","fit":"A middle-order No. 4 (57% of pressure balls in the middle overs).","watch":"The pressure level is below average, so this completes the list rather than strengthening it. No IPL record.","needs":[],"photo":{"src":"https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Harry_Tector_2022.jpg/500px-Harry_Tector_2022.jpg","pos":"50% 22%","artist":"Storm machine","licence":"CC BY-SA 4.0","licence_url":"https://creativecommons.org/licenses/by-sa/4.0","page":"https://commons.wikimedia.org/wiki/File:Harry_Tector_2022.jpg","file":"Harry Tector 2022.jpg"},"n_press":220,"matches":27,"ipl":"0","level":"−5.7","delivery":"65","bust":"6","p10":"40","hist":[0,3,3,6,7,4,11,14,15,16,15,13,16,16,16,10,10,6,9,2],"runs_out":8,"attrs":[{"k":"Pressure level","v":"−5.7 runs/100","p":15},{"k":"Comes through","v":"65%","p":91},{"k":"Rarely fails","v":"6% go wrong","p":92},{"k":"Usual level","v":"−7.3 runs/100","p":6},{"k":"Record size","v":"220 balls","p":34}],"vs":[{"k":"Strike rate","press":"127","usual":"124","better":true},{"k":"Balls per dismissal","press":"28","usual":"25","better":true}],"phases":[{"k":"Powerplay","share":"28","val":"134","n":62,"unit":"strike rate"},{"k":"Middle","share":"57","val":"115","n":125,"unit":"strike rate"},{"k":"Death","share":"15","val":"158","n":33,"unit":"strike rate"}],"analyst":false},{"id":"bat-travis-head","name":"Travis Head","rank":10,"nation":"Australia","code":"AUS","colour":"#D9A400","role":"Left-hand opener","status":"Released by SRH","released":true,"why":"A strong usual level and a strike rate of 169 under pressure.","fit":"82% of Head's pressure balls are in the powerplay, which the Royals already do well.","watch":"18% of pressure matches go badly wrong, the most on this list.","needs":[],"photo":{"src":"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/RSA_vs_AUS_Day_3-Travis_Head-1.jpg/500px-RSA_vs_AUS_Day_3-Travis_Head-1.jpg","pos":"50% 20%","artist":"EGilham","licence":"CC BY 4.0","licence_url":"https://creativecommons.org/licenses/by/4.0","page":"https://commons.wikimedia.org/wiki/File:RSA_vs_AUS_Day_3-Travis_Head-1.jpg","file":"RSA vs AUS Day 3-Travis Head-1.jpg"},"n_press":355,"matches":51,"ipl":"66","level":"+5.8","delivery":"55","bust":"18","p10":"57","hist":[7,8,14,15,11,14,16,10,15,4,1,3,7,4,11,7,6,6,6,5],"runs_out":30,"attrs":[{"k":"Pressure level","v":"+5.8 runs/100","p":71},{"k":"Comes through","v":"55%","p":53},{"k":"Rarely fails","v":"18% go wrong","p":6},{"k":"Usual level","v":"+5.9 runs/100","p":78},{"k":"Record size","v":"355 balls","p":74}],"vs":[{"k":"Strike rate","press":"169","usual":"174","better":false},{"k":"Balls per dismissal","press":"21","usual":"16","better":true}],"phases":[{"k":"Powerplay","share":"82","val":"169","n":291,"unit":"strike rate"},{"k":"Middle","share":"18","val":"169","n":64,"unit":"strike rate"},{"k":"Death","share":"0","val":null,"n":0,"unit":"strike rate"}],"analyst":false}],"locked":[{"name":"Vaibhav Sooryavanshi","rank":1,"team":"RR","state":"royal"},{"name":"Heinrich Klaasen","rank":2,"team":"SRH","state":"locked"},{"name":"Tim David","rank":3,"team":"RCB","state":"locked"},{"name":"Suryakumar Yadav","rank":4,"team":"MI","state":"locked"},{"name":"Rinku Singh","rank":5,"team":"KKR","state":"locked"},{"name":"Abhishek Sharma","rank":6,"team":"SRH","state":"locked"},{"name":"Rajat Patidar","rank":7,"team":"RCB","state":"locked"},{"name":"Shreyas Iyer","rank":8,"team":"PBKS","state":"locked"},{"name":"Dewald Brevis","rank":9,"team":"CSK","state":"locked"},{"name":"Rovman Powell","rank":10,"team":"KKR","state":"locked"}],"pool":121,"avg":{"delivery":"55","bust":"12"}},"bowl":{"players":[{"id":"bowl-matheesha-pathirana","name":"Matheesha Pathirana","rank":1,"nation":"Sri Lanka","code":"SL","colour":"#2453B8","role":"Right-arm fast · death overs","status":"Released by KKR","released":true,"why":"The highest-rated bowler the Royals can bid for, and the only one of the overall top 20 in the auction. Worth 12 runs per 100 balls against an average bowler, with a wicket every 14 pressure balls.","fit":"Death bowling under pressure was the Royals' seventh-best of ten in 2026, at 11.0 an over. Pathirana bowls 46% of pressure balls at the death, at 8.9 an over (180 balls).","watch":"Control: 9.4% of pressure deliveries are wides or no-balls, more than double the 4.2% norm.","needs":["death_bowl"],"photo":null,"n_press":392,"matches":39,"ipl":"66","level":"+11.6","delivery":"61","bust":"7","p10":"94","hist":[90,35,14,12,13,11,7,2,2,1,4,2,1,2,1,0,0,2,0,1],"runs_out":0,"attrs":[{"k":"Pressure level","v":"+11.6 runs/100","p":94},{"k":"Comes through","v":"61%","p":97},{"k":"Rarely fails","v":"7% go wrong","p":99},{"k":"Usual level","v":"+10.8 runs/100","p":95},{"k":"Record size","v":"392 balls","p":71}],"vs":[{"k":"Runs an over","press":"8.7","usual":"8.9","better":true},{"k":"Balls per wicket","press":"14","usual":"14","better":null},{"k":"Wides and no-balls","press":"9.4%","usual":"12.4%","better":true}],"phases":[{"k":"Powerplay","share":"8","val":"10.3","n":30,"unit":"an over"},{"k":"Middle","share":"46","val":"8.3","n":182,"unit":"an over"},{"k":"Death","share":"46","val":"8.9","n":180,"unit":"an over"}],"analyst":true},{"id":"bowl-trent-boult","name":"Trent Boult","rank":2,"nation":"New Zealand","code":"NZ","colour":"#5B6577","role":"Left-arm fast-medium · new ball","status":"Released by MI","released":true,"why":"The most IPL-tested bowler on the board (92% of 573 pressure balls), and better under pressure than usual.","fit":"Powerplay bowling under pressure was the Royals' weakest department in 2026 (11.2 an over, 8th of 10). Boult bowls two-thirds of pressure balls with the new ball, at 7.7 an over. A former Royal.","watch":"Takes wickets at about the average rate (one every 20 pressure balls). Age and fitness are not in the data.","needs":["newball"],"photo":{"src":"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/2018.02.03.22.23.14-AUSvNZL_T20_AUS_innings%2C_SCG_%2839533156665%29.jpg/500px-2018.02.03.22.23.14-AUSvNZL_T20_AUS_innings%2C_SCG_%2839533156665%29.jpg","pos":"50% 25%","artist":"David Molloy","licence":"CC BY 2.0","licence_url":"https://creativecommons.org/licenses/by/2.0","page":"https://commons.wikimedia.org/wiki/File:2018.02.03.22.23.14-AUSvNZL_T20_AUS_innings,_SCG_(39533156665).jpg","file":"2018.02.03.22.23.14-AUSvNZL T20 AUS innings, SCG (39533156665).jpg"},"n_press":573,"matches":60,"ipl":"92","level":"+9.9","delivery":"55","bust":"10","p10":"81","hist":[24,33,35,22,9,4,10,10,5,9,6,6,2,2,9,4,4,1,0,2],"runs_out":3,"attrs":[{"k":"Pressure level","v":"+9.9 runs/100","p":88},{"k":"Comes through","v":"55%","p":82},{"k":"Rarely fails","v":"10% go wrong","p":84},{"k":"Usual level","v":"+5.7 runs/100","p":78},{"k":"Record size","v":"573 balls","p":88}],"vs":[{"k":"Runs an over","press":"8.3","usual":"8.6","better":true},{"k":"Balls per wicket","press":"20","usual":"22","better":true},{"k":"Wides and no-balls","press":"4.4%","usual":"3.6%","better":false}],"phases":[{"k":"Powerplay","share":"66","val":"7.7","n":381,"unit":"an over"},{"k":"Middle","share":"15","val":"10.5","n":87,"unit":"an over"},{"k":"Death","share":"18","val":"9.0","n":105,"unit":"an over"}],"analyst":true},{"id":"bowl-gerald-coetzee","name":"Gerald Coetzee","rank":3,"nation":"South Africa","code":"SA","colour":"#0E8A55","role":"Right-arm fast · powerplay and death","status":"Released by SRH","released":true,"why":"Much better under pressure than usual: 8.4 an over against 10.0, a wicket every 12 pressure balls and 46% dot balls.","fit":"Covers both ends: 53% of pressure balls in the powerplay (8.3 an over) and 28% at the death (8.8 an over).","watch":"Exactly 150 pressure balls, the minimum to be rated, and 9.3% wides and no-balls.","needs":["newball","death_bowl"],"photo":{"src":"https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/RSA_vs_AUS_Day_2_-_Gerald_Coetzee.jpg/500px-RSA_vs_AUS_Day_2_-_Gerald_Coetzee.jpg","pos":"50% 18%","artist":"EGilham","licence":"CC BY-SA 4.0","licence_url":"https://creativecommons.org/licenses/by-sa/4.0","page":"https://commons.wikimedia.org/wiki/File:RSA_vs_AUS_Day_2_-_Gerald_Coetzee.jpg","file":"RSA vs AUS Day 2 - Gerald Coetzee.jpg"},"n_press":150,"matches":24,"ipl":"49","level":"+5.0","delivery":"55","bust":"8","p10":"74","hist":[8,13,17,15,16,14,23,11,17,13,7,9,8,5,5,1,3,4,3,4],"runs_out":4,"attrs":[{"k":"Pressure level","v":"+5.0 runs/100","p":69},{"k":"Comes through","v":"55%","p":84},{"k":"Rarely fails","v":"8% go wrong","p":97},{"k":"Usual level","v":"+3.5 runs/100","p":68},{"k":"Record size","v":"150 balls","p":0}],"vs":[{"k":"Runs an over","press":"8.4","usual":"10.0","better":true},{"k":"Balls per wicket","press":"12","usual":"19","better":true},{"k":"Wides and no-balls","press":"9.3%","usual":"8.2%","better":false}],"phases":[{"k":"Powerplay","share":"53","val":"8.3","n":79,"unit":"an over"},{"k":"Middle","share":"19","val":"8.1","n":29,"unit":"an over"},{"k":"Death","share":"28","val":"8.8","n":42,"unit":"an over"}],"analyst":false},{"id":"bowl-mahedi-hasan","name":"Mahedi Hasan","rank":4,"nation":"Bangladesh","code":"BAN","colour":"#00805A","role":"Off-spin · powerplay","status":"Not in an IPL squad","released":false,"why":"The most dependable spinner on the board: comes through in 59% of pressure matches, against 48% for the average bowler, at 6.9 an over.","fit":"A powerplay off-spinner: 54% of pressure balls in the first six overs, at 6.0 an over, the Royals' worst bowling phase.","watch":"No IPL record and expensive at the death (11.5 an over). Not among the seven Bangladesh players reported as registered.","needs":["newball"],"photo":null,"n_press":256,"matches":29,"ipl":"0","level":"+2.4","delivery":"59","bust":"10","p10":"63","hist":[2,16,11,16,15,13,14,17,10,12,11,10,9,4,6,4,4,9,2,1],"runs_out":14,"attrs":[{"k":"Pressure level","v":"+2.4 runs/100","p":56},{"k":"Comes through","v":"59%","p":95},{"k":"Rarely fails","v":"10% go wrong","p":81},{"k":"Usual level","v":"+3.4 runs/100","p":67},{"k":"Record size","v":"256 balls","p":41}],"vs":[{"k":"Runs an over","press":"6.9","usual":"6.9","better":null},{"k":"Balls per wicket","press":"18","usual":"17","better":false},{"k":"Wides and no-balls","press":"3.5%","usual":"1.8%","better":false}],"phases":[{"k":"Powerplay","share":"54","val":"6.0","n":139,"unit":"an over"},{"k":"Middle","share":"31","val":"6.3","n":79,"unit":"an over"},{"k":"Death","share":"15","val":"11.5","n":38,"unit":"an over"}],"analyst":false},{"id":"bowl-blessing-muzarabani","name":"Blessing Muzarabani","rank":5,"nation":"Zimbabwe","code":"ZIM","colour":"#C8102E","role":"Right-arm fast-medium · new ball","status":"Released by KKR","released":true,"why":"Worth 7 runs per 100 balls against an average bowler; comes through in 56% of pressure matches.","fit":"A new-ball option: 71% of pressure balls in the powerplay, at 6.6 an over (192 balls).","watch":"Costs more under pressure than usual (8.1 against 7.3) and 12.4 an over at the death.","needs":["newball"],"photo":null,"n_press":271,"matches":28,"ipl":"4","level":"+7.5","delivery":"56","bust":"13","p10":"63","hist":[18,15,14,16,19,10,15,9,6,4,6,5,3,5,7,7,5,7,1,4],"runs_out":24,"attrs":[{"k":"Pressure level","v":"+7.5 runs/100","p":79},{"k":"Comes through","v":"56%","p":90},{"k":"Rarely fails","v":"13% go wrong","p":60},{"k":"Usual level","v":"+10.0 runs/100","p":93},{"k":"Record size","v":"271 balls","p":45}],"vs":[{"k":"Runs an over","press":"8.1","usual":"7.3","better":false},{"k":"Balls per wicket","press":"20","usual":"17","better":false},{"k":"Wides and no-balls","press":"2.2%","usual":"3.5%","better":true}],"phases":[{"k":"Powerplay","share":"71","val":"6.6","n":192,"unit":"an over"},{"k":"Middle","share":"4","val":"8.4","n":10,"unit":"an over"},{"k":"Death","share":"25","val":"12.4","n":69,"unit":"an over"}],"analyst":false},{"id":"bowl-roston-chase","name":"Roston Chase","rank":6,"nation":"West Indies","code":"WI","colour":"#8A1538","role":"Off-spin · middle overs","status":"Not in an IPL squad","released":false,"why":"Worth 6 runs per 100 balls against an average bowler and comes through in 55% of pressure matches.","fit":"Middle-overs off-spin (68% of pressure balls) plus batting. The Royals already bowl Jadeja and Bishnoi there, so this is depth, not a gap.","watch":"Few wickets under pressure: one every 35 balls, against 20 for the average bowler. No IPL record.","needs":[],"photo":{"src":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Roston_Chase_batting_at_Perth_Stadium%2C_First_Test_Australia_versus_West_Indies%2C_2_December_2022_09.jpg/500px-Roston_Chase_batting_at_Perth_Stadium%2C_First_Test_Australia_versus_West_Indies%2C_2_December_2022_09.jpg","pos":"55% 30%","artist":"Calistemon","licence":"CC BY-SA 4.0","licence_url":"https://creativecommons.org/licenses/by-sa/4.0","page":"https://commons.wikimedia.org/wiki/File:Roston_Chase_batting_at_Perth_Stadium,_First_Test_Australia_versus_West_Indies,_2_December_2022_09.jpg","file":"Roston Chase batting at Perth Stadium, First Test Australia versus West Indies, 2 December 2022 09.jpg"},"n_press":287,"matches":37,"ipl":"0","level":"+5.9","delivery":"55","bust":"11","p10":"62","hist":[14,20,14,13,7,13,15,7,8,12,6,4,7,7,3,4,7,6,7,0],"runs_out":26,"attrs":[{"k":"Pressure level","v":"+5.9 runs/100","p":75},{"k":"Comes through","v":"55%","p":85},{"k":"Rarely fails","v":"11% go wrong","p":76},{"k":"Usual level","v":"+6.2 runs/100","p":80},{"k":"Record size","v":"287 balls","p":49}],"vs":[{"k":"Runs an over","press":"8.2","usual":"7.7","better":false},{"k":"Balls per wicket","press":"35","usual":"21","better":false},{"k":"Wides and no-balls","press":"2.8%","usual":"3.5%","better":true}],"phases":[{"k":"Powerplay","share":"25","val":"8.6","n":73,"unit":"an over"},{"k":"Middle","share":"68","val":"8.2","n":196,"unit":"an over"},{"k":"Death","share":"6","val":"6.3","n":18,"unit":"an over"}],"analyst":false},{"id":"bowl-mustafizur-rahman","name":"Mustafizur Rahman","rank":7,"nation":"Bangladesh","code":"BAN","colour":"#00805A","role":"Left-arm pace · powerplay and death","status":"Released by KKR","released":true,"why":"Bowls at both ends, with 37% of the record in the IPL.","fit":"39% of pressure balls in the powerplay (7.6 an over) and 37% at the death.","watch":"Costs about a run an over more under pressure than usual (8.7 against 7.6), and 10.6 an over at the death.","needs":["newball"],"photo":{"src":"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Mustafizur_Rahman_%284%29_%28cropped%29.jpg/500px-Mustafizur_Rahman_%284%29_%28cropped%29.jpg","pos":"50% 20%","artist":"Nurunnaby Chowdhury (Hasive)","licence":"CC BY-SA 4.0","licence_url":"https://creativecommons.org/licenses/by-sa/4.0","page":"https://commons.wikimedia.org/wiki/File:Mustafizur_Rahman_(4)_(cropped).jpg","file":"Mustafizur Rahman (4) (cropped).jpg"},"n_press":442,"matches":53,"ipl":"37","level":"+6.9","delivery":"55","bust":"14","p10":"56","hist":[10,10,14,10,13,11,11,10,17,6,6,14,6,9,7,2,5,4,7,3],"runs_out":25,"attrs":[{"k":"Pressure level","v":"+6.9 runs/100","p":78},{"k":"Comes through","v":"55%","p":82},{"k":"Rarely fails","v":"14% go wrong","p":54},{"k":"Usual level","v":"+11.4 runs/100","p":97},{"k":"Record size","v":"442 balls","p":79}],"vs":[{"k":"Runs an over","press":"8.7","usual":"7.6","better":false},{"k":"Balls per wicket","press":"19","usual":"21","better":true},{"k":"Wides and no-balls","press":"3.2%","usual":"4.7%","better":true}],"phases":[{"k":"Powerplay","share":"38","val":"7.6","n":170,"unit":"an over"},{"k":"Middle","share":"24","val":"7.7","n":108,"unit":"an over"},{"k":"Death","share":"37","val":"10.6","n":164,"unit":"an over"}],"analyst":false},{"id":"bowl-lockie-ferguson","name":"Lockie Ferguson","rank":8,"nation":"New Zealand","code":"NZ","colour":"#5B6577","role":"Right-arm fast · powerplay","status":"Released by PBKS","released":true,"why":"Worth 8 runs per 100 balls against an average bowler, mostly in the IPL (63% of the record).","fit":"Pace for the powerplay: 49% of pressure balls with the new ball, at 8.7 an over.","watch":"Comes through in only 51% of pressure matches, and 11.6 an over at the death.","needs":["newball"],"photo":{"src":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Lockie_Ferguson.jpg/500px-Lockie_Ferguson.jpg","pos":"50% 25%","artist":"CRICKETNEXT","licence":"CC BY 3.0","licence_url":"https://creativecommons.org/licenses/by/3.0","page":"https://commons.wikimedia.org/wiki/File:Lockie_Ferguson.jpg","file":"Lockie Ferguson.jpg"},"n_press":300,"matches":41,"ipl":"63","level":"+8.3","delivery":"51","bust":"14","p10":"59","hist":[13,9,14,14,15,10,8,11,7,16,7,5,9,9,7,8,6,3,6,5],"runs_out":18,"attrs":[{"k":"Pressure level","v":"+8.3 runs/100","p":83},{"k":"Comes through","v":"51%","p":68},{"k":"Rarely fails","v":"14% go wrong","p":55},{"k":"Usual level","v":"+6.6 runs/100","p":84},{"k":"Record size","v":"300 balls","p":53}],"vs":[{"k":"Runs an over","press":"9.0","usual":"9.0","better":null},{"k":"Balls per wicket","press":"19","usual":"17","better":false},{"k":"Wides and no-balls","press":"5.3%","usual":"5.5%","better":true}],"phases":[{"k":"Powerplay","share":"49","val":"8.7","n":146,"unit":"an over"},{"k":"Middle","share":"35","val":"8.4","n":106,"unit":"an over"},{"k":"Death","share":"16","val":"11.6","n":48,"unit":"an over"}],"analyst":false},{"id":"bowl-maheesh-theekshana","name":"Maheesh Theekshana","rank":9,"nation":"Sri Lanka","code":"SL","colour":"#2453B8","role":"Off-spin · powerplay and middle","status":"Not in an IPL squad","released":false,"why":"A former Royal with the largest record on the board (592 pressure balls), at 7.3 an over under pressure against 8.0 usually.","fit":"Off-spin for the powerplay and the middle overs (6.4 an over in the middle).","watch":"Comes through in only 47% of pressure matches, under the 48% norm, and takes a wicket only every 28 balls.","needs":["newball"],"photo":null,"n_press":592,"matches":74,"ipl":"38","level":"+7.9","delivery":"47","bust":"10","p10":"56","hist":[1,6,10,14,13,14,12,11,19,13,7,10,11,6,7,5,2,14,6,2],"runs_out":17,"attrs":[{"k":"Pressure level","v":"+7.9 runs/100","p":80},{"k":"Comes through","v":"47%","p":48},{"k":"Rarely fails","v":"10% go wrong","p":78},{"k":"Usual level","v":"+3.7 runs/100","p":70},{"k":"Record size","v":"592 balls","p":92}],"vs":[{"k":"Runs an over","press":"7.3","usual":"8.0","better":true},{"k":"Balls per wicket","press":"28","usual":"23","better":false},{"k":"Wides and no-balls","press":"2.0%","usual":"2.4%","better":true}],"phases":[{"k":"Powerplay","share":"47","val":"7.8","n":280,"unit":"an over"},{"k":"Middle","share":"40","val":"6.4","n":234,"unit":"an over"},{"k":"Death","share":"13","val":"8.3","n":78,"unit":"an over"}],"analyst":false},{"id":"bowl-richard-ngarava","name":"Richard Ngarava","rank":10,"nation":"Zimbabwe","code":"ZIM","colour":"#C8102E","role":"Left-arm pace · powerplay and death","status":"Not in an IPL squad","released":false,"why":"A wicket every 15 pressure balls, at 7.6 an over under pressure against 8.3 usually.","fit":"Left-arm pace at both ends: 69% of pressure balls in the powerplay (7.0 an over) and 28% at the death (9.2).","watch":"7.3% wides and no-balls, and no IPL record.","needs":["newball","death_bowl"],"photo":null,"n_press":260,"matches":33,"ipl":"0","level":"+2.2","delivery":"51","bust":"9","p10":"45","hist":[0,4,7,6,12,14,3,15,14,15,10,11,5,5,9,3,9,8,5,8],"runs_out":37,"attrs":[{"k":"Pressure level","v":"+2.2 runs/100","p":54},{"k":"Comes through","v":"51%","p":68},{"k":"Rarely fails","v":"9% go wrong","p":88},{"k":"Usual level","v":"−0.6 runs/100","p":41},{"k":"Record size","v":"260 balls","p":42}],"vs":[{"k":"Runs an over","press":"7.6","usual":"8.3","better":true},{"k":"Balls per wicket","press":"15","usual":"24","better":true},{"k":"Wides and no-balls","press":"7.3%","usual":"3.8%","better":false}],"phases":[{"k":"Powerplay","share":"69","val":"7.0","n":180,"unit":"an over"},{"k":"Middle","share":"3","val":"6.8","n":8,"unit":"an over"},{"k":"Death","share":"28","val":"9.2","n":72,"unit":"an over"}],"analyst":false}],"locked":[{"name":"Jasprit Bumrah","rank":1,"team":"MI","state":"locked"},{"name":"Sunil Narine","rank":2,"team":"KKR","state":"locked"},{"name":"Josh Hazlewood","rank":3,"team":"RCB","state":"locked"},{"name":"Nathan Ellis","rank":4,"team":"SRH","state":"locked"},{"name":"Matheesha Pathirana","rank":5,"team":"","state":"open"},{"name":"Rashid Khan","rank":6,"team":"GT","state":"locked"},{"name":"Krunal Pandya","rank":7,"team":"RCB","state":"locked"},{"name":"Akeal Hosein","rank":8,"team":"CSK","state":"locked"},{"name":"Kagiso Rabada","rank":9,"team":"GT","state":"locked"},{"name":"Kuldeep Yadav","rank":10,"team":"LSG","state":"locked"}],"pool":120,"avg":{"delivery":"47","bust":"15"}}},"royals":{"tiles":[{"side":"bat","label":"Powerplay","rank":2,"value":"195","league":"165","unit":"per 100 balls","need":null,"balls":240},{"side":"bat","label":"Middle overs","rank":4,"value":"145","league":"148","unit":"per 100 balls","need":null,"balls":121},{"side":"bat","label":"Death overs","rank":7,"value":"159","league":"177","unit":"per 100 balls","need":"death_hit","balls":73},{"side":"bowl","label":"Powerplay","rank":8,"value":"11.2","league":"10.5","unit":"an over","need":"newball","balls":315},{"side":"bowl","label":"Middle overs","rank":5,"value":"9.3","league":"9.6","unit":"an over","need":null,"balls":290},{"side":"bowl","label":"Death overs","rank":7,"value":"11.0","league":"10.8","unit":"an over","need":"death_bowl","balls":121}],"slots":6,"overseas":3,"purse":"27.05"},"analyst":["Trent Boult","Matheesha Pathirana","Sikandar Raza"]};
+const NEEDS = {newball:"New-ball bowling", death_bowl:"Death bowling", death_hit:"Death-overs hitting"};
+const ROLE = {bat:"batters", bowl:"bowlers"};
+const PHASE_C = ["#3DA5FF", "#A78BFF", "#FF2E88"];
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ord = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th","st","nd","rd"][n % 10] || "th");
+
+const byId = {};
+for (const r of ["bat", "bowl"]) for (const p of DATA.roles[r].players) { p.kind = r; byId[p.id] = p; }
+const tileFor = Object.fromEntries(DATA.royals.tiles.filter(t => t.need).map(t => [t.need, t]));
+
+const S = {role: "bat", i: 0, picks: load()};
+
+function load() {
+  try {
+    const v = JSON.parse(localStorage.getItem("pp-picks") || "null");
+    if (Array.isArray(v)) return v.filter(id => byId[id]).slice(0, 3);
+  } catch (e) {}
+  return [];
+}
+function save() { try { localStorage.setItem("pp-picks", JSON.stringify(S.picks)); } catch (e) {} }
+
+const ICON = {
+  lock: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2" stroke="currentColor" stroke-width="1.6" fill="none"/><rect x="3" y="7" width="10" height="7.5" rx="1.2" fill="currentColor"/></svg>',
+  star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.7 5.9 6.4.7-4.8 4.3 1.4 6.3L12 16.8 6.3 20l1.4-6.3L2.9 9.4l6.4-.7z" fill="currentColor"/></svg>',
+  target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9.5v5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>',
+  check: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  star2: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l1.9 4.1 4.5.5-3.4 3 1 4.4L8 11.3 4 13.5l1-4.4-3.4-3 4.5-.5z" fill="currentColor"/></svg>'
+};
+
+function sil(kind) {
+  const head = kind === "bat"
+    ? '<path class="f" d="M31 40C30 25 39 15 50 15s20 10 19 25z"/><circle class="f" cx="50" cy="42" r="15"/><path class="s" d="M35 43h30M35 49h30M43 40v15M50 40v16M57 40v15"/>'
+    : '<circle class="f" cx="50" cy="40" r="16"/><path class="f" d="M33 34c1-11 9-17 18-17s16 6 17 15l12 3c-8 3-25 2-47 0z"/>';
+  return `<svg class="sil" viewBox="0 0 100 100" aria-hidden="true">${head}<path class="f" d="M12 100c0-24 17-38 38-38s38 14 38 38z"/></svg>`;
+}
+function avatar(p, cls = "") {
+  const img = p.photo ? `<img src="${esc(p.photo.src)}" alt="" loading="lazy" style="object-position:${esc(p.photo.pos)}" onerror="this.remove()">` : "";
+  return `<span class="av ${cls}" style="--c:${p.colour}">${sil(p.kind)}${img}</span>`;
+}
+const cur = () => DATA.roles[S.role].players[S.i];
+const surname = n => n.split(" ").slice(1).join(" ") || n;
+
+/* ------------------------------------------------------------ board */
+function renderBoard() {
+  const ps = DATA.roles[S.role].players;
+  const last = n => n.split(" ").slice(-1)[0];
+  const dup = new Set(ps.map(p => last(p.name)).filter((s, i, a) => a.indexOf(s) !== i));
+  $("#board-title").textContent = "Top 10 " + ROLE[S.role];
+  $("#rows").innerHTML = ps.map((p, i) => `
+    <button class="row ${i === 0 ? "first" : ""} ${S.picks.includes(p.id) ? "picked" : ""}" role="option" aria-selected="${i === S.i}" data-i="${i}"
+      aria-label="${p.rank}. ${esc(p.name)}, ${esc(p.nation)}. Top 10 in ${p.p10}% of replays">
+      <span class="r">${p.rank}</span>${avatar(p)}
+      <span class="nm"><b><span class="full">${esc(p.name)}</span><span class="short">${esc(dup.has(last(p.name)) ? p.name.split(" ")[0] + " " + last(p.name)[0] + "." : last(p.name))}</span></b><small>${p.code} · ${esc(p.role)}</small></span>
+      <span class="pc"><b>${p.p10}%</b><i style="--w:${p.p10}%"></i></span>
+      <span class="tick" title="In your picks"></span>
+    </button>`).join("");
+  for (const b of document.querySelectorAll(".tabs button")) b.setAttribute("aria-selected", b.dataset.role === S.role);
+  const rows = $("#rows"), sel = $("#rows .row[aria-selected='true']");
+  if (sel && rows.scrollWidth > rows.clientWidth) {
+    const a = rows.getBoundingClientRect(), b = sel.getBoundingClientRect();
+    rows.scrollTo({left: rows.scrollLeft + (b.left - a.left) - (a.width - b.width) / 2, behavior: "smooth"});
+  }
+}
+
+/* ------------------------------------------------------------ card */
+function renderCard(animate = true) {
+  const p = cur();
+  const parts = p.name.split(" ");
+  const first = parts.length > 1 ? parts.slice(0, -1).join(" ") : "";
+  const last = parts[parts.length - 1];
+  const photo = p.photo
+    ? `<img src="${esc(p.photo.src)}" alt="Photo of ${esc(p.name)}" style="object-position:${esc(p.photo.pos)}" onerror="this.remove()">
+       <a class="credit" href="${esc(p.photo.page)}" target="_blank" rel="noopener">Photo: ${esc(p.photo.artist)}, ${esc(p.photo.licence)}</a>`
+    : `<span class="wm" aria-hidden="true">${p.code}</span><span class="credit">No freely licensed photo</span>`;
+  $("#card-wrap").innerHTML = `
+    <article class="card ${p.rank === 1 ? "gold" : ""} ${animate ? "deal" : ""}" id="card" style="--c:${p.colour}" aria-label="Player card: ${esc(p.name)}">
+      <div class="card-in">
+        <header class="card-top">
+          <div class="rk"><small>${S.role === "bat" ? "Batter" : "Bowler"} rank</small><b>${p.rank}</b></div>
+          <div class="nat"><b>${p.code}</b><span>${esc(p.nation)} · Overseas</span></div>
+        </header>
+        <div class="card-photo">${sil(p.kind)}${photo}
+          ${p.analyst ? '<span class="pick-badge">Analyst\'s pick</span>' : ""}
+          <span class="ribbon ${p.released ? "" : "free"}">${esc(p.status)}</span>
+        </div>
+        <div class="card-name"><h2>${esc(first)}<b>${esc(last)}</b></h2><p>${esc(p.role)}</p></div>
+        <div class="card-stats">
+          <div data-tip="Runs per 100 pressure balls above an average ${S.role === "bat" ? "batter" : "bowler"} in the same situations"><b>${p.level}</b><span>Pressure level</span></div>
+          <div data-tip="Share of pressure matches where the player's pressure balls add up to a positive contribution"><b>${p.delivery}%</b><span>Comes through</span></div>
+          <div data-tip="Share of pressure matches that end well below par. Lower is better."><b>${p.bust}%</b><span>Goes wrong</span></div>
+        </div>
+        <div class="card-hold" data-tip="The rating was rebuilt 200 times on different mixes of matches"><span>Top 10 in</span><i style="--w:${p.p10}%"></i><b>${p.p10}%</b></div>
+      </div>
+    </article>`;
+  $("#count").textContent = `${S.i + 1} / ${DATA.roles[S.role].players.length}`;
+  const add = $("#add"), inPicks = S.picks.includes(p.id);
+  add.classList.toggle("on", inPicks);
+  add.textContent = inPicks ? "✓ In your picks" : "+ Add to picks";
+  add.setAttribute("aria-pressed", inPicks);
+  tilt($("#card"));
+}
+
+function tilt(card) {
+  if (!card || matchMedia("(prefers-reduced-motion:reduce), (pointer:coarse)").matches) return;
+  const wrap = $("#card-wrap");
+  wrap.onpointermove = e => {
+    const r = wrap.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    card.style.setProperty("--ry", ((x - .5) * 14).toFixed(2) + "deg");
+    card.style.setProperty("--rx", ((.5 - y) * 10).toFixed(2) + "deg");
+    card.style.setProperty("--mx", (100 - x * 100).toFixed(1) + "%");
+  };
+  wrap.onpointerleave = () => { card.style.setProperty("--rx", "0deg"); card.style.setProperty("--ry", "0deg"); card.style.setProperty("--mx", "50%"); };
+}
+
+/* ------------------------------------------------------------ side panels */
+function renderSide() {
+  const p = cur(), pool = DATA.roles[S.role].pool;
+  $("#fit-sub").textContent = `What ${surname(p.name)} adds`;
+  $("#needs").innerHTML = p.needs.length
+    ? p.needs.map(n => `<span class="chip" data-tip="Royals ${ord(tileFor[n].rank)} of 10 here under pressure in 2026">${ICON.check}Fills: ${NEEDS[n]}</span>`).join("")
+    : `<span class="chip muted">Depth, not one of the three gaps</span>`;
+  $("#fit").innerHTML = [["why", "The case", ICON.star, p.why], ["fit", "Royals fit", ICON.target, p.fit], ["watch", "Watch", ICON.warn, p.watch]]
+    .map(([c, t, ic, txt]) => `<div class="fitrow ${c}">${ic}<div><b>${t}</b><p>${esc(txt)}</p></div></div>`).join("");
+  $("#attr-sub").textContent = `against ${pool} rated ${ROLE[S.role]}`;
+  $("#attrs").innerHTML = p.attrs.map(a => `
+    <div class="attr" data-tip="Beats ${a.p}% of the ${pool} rated ${ROLE[S.role]}">
+      <span class="k">${a.k}</span><span class="bar" style="--w:${Math.max(a.p, 1)}%"></span>
+      <span class="v"><b>${esc(a.v)}</b><small>beats ${a.p}%</small></span>
+    </div>`).join("");
+}
+
+function renderSheet() {
+  const p = cur();
+  const tag = b => b === null ? '<span class="tag same">= Same</span>' : b ? '<span class="tag up">▲ Better</span>' : '<span class="tag down">▼ Worse</span>';
+  $("#vs").innerHTML = `<tr><th></th><th>Pressure</th><th>Usual</th><th></th></tr>` +
+    p.vs.map(v => `<tr><td>${v.k}</td><td>${esc(v.press)}</td><td class="u">${esc(v.usual)}</td><td>${tag(v.better)}</td></tr>`).join("");
+  const unit = S.role === "bat" ? "strike rate" : "runs an over";
+  $("#phase").innerHTML = p.phases.map((ph, i) => `
+    <div style="flex-grow:${Math.max(+ph.share, .5)}; background:${PHASE_C[i]}" data-tip="${ph.k}: ${ph.share}% of pressure balls (${ph.n})${ph.val ? ", " + unit + " " + ph.val : ""}">${+ph.share >= 12 ? ph.share + "%" : ""}</div>`).join("");
+  $("#legend").innerHTML = p.phases.map((ph, i) => `
+    <div style="--k:${PHASE_C[i]}"><span>${ph.k} · ${ph.share}%</span><b>${ph.val ?? "–"}</b><span>${ph.n ? unit + ", " + ph.n + " balls" : "no balls"}</span></div>`).join("");
+  const max = Math.max(...p.hist);
+  $("#strip").innerHTML = p.hist.map((c, k) => `<i style="--a:${(.06 + .94 * c / max).toFixed(3)}" data-tip="Finished ${ord(k + 1)} in ${c} of 200 replays"></i>`).join("");
+  $("#strip-ax").innerHTML = p.hist.map((c, k) => `<span>${[1, 5, 10, 15, 20].includes(k + 1) ? k + 1 : ""}</span>`).join("");
+  const top = p.hist.slice(0, 10).reduce((a, b) => a + b, 0);
+  $("#hold").innerHTML = `<b>${p.p10}%</b><span>of replays keep ${surname(p.name)} in the top 10 (${top} of 200).${p.runs_out ? ` Outside the top 20 in ${p.runs_out}.` : ""}</span>`;
+}
+
+/* ------------------------------------------------------------ mission */
+function renderDepts() {
+  const t = DATA.royals.tiles;
+  const tile = x => {
+    const cls = x.rank >= 7 ? "gap" : "";
+    const flag = x.rank >= 7 ? '<span class="flag">Gap</span>' : x.rank <= 3 ? '<span class="flag ok">Strength</span>' : '<span class="flag mid">Middle</span>';
+    const pips = Array.from({length: 10}, (_, k) => `<i class="${k + 1 === x.rank ? "me" : ""}"></i>`).join("");
+    return `<div class="dt ${cls}" data-tip="${x.balls} Royals pressure balls"><div class="lab"><span>${x.label}</span>${flag}</div>
+      <b>${ord(x.rank)}<small> / 10</small></b><div class="pips" aria-hidden="true">${pips}</div>
+      <p>${x.value} ${x.unit} · league ${x.league}</p></div>`;
+  };
+  $("#depts").innerHTML = `<h4>Batting</h4>${t.filter(x => x.side === "bat").map(tile).join("")}<h4>Bowling</h4>${t.filter(x => x.side === "bowl").map(tile).join("")}`;
+}
+
+function renderPicks() {
+  const ps = S.picks.map(id => byId[id]);
+  $("#slots").innerHTML = [0, 1, 2].map(k => {
+    const p = ps[k];
+    if (!p) return `<div class="slot"><span class="empty">+</span><small>Overseas place ${k + 1}</small></div>`;
+    return `<div class="slot full">${avatar(p)}<b>${esc(p.name)}</b><small>${p.kind === "bat" ? "Batter" : "Bowler"} #${p.rank} · ${p.code}</small>
+      <button class="x" data-rm="${p.id}" aria-label="Remove ${esc(p.name)}">&times;</button></div>`;
+  }).join("");
+  let done = 0;
+  $("#objs").innerHTML = Object.entries(NEEDS).map(([k, label]) => {
+    const t = tileFor[k], who = ps.filter(p => p.needs.includes(k)).map(p => surname(p.name));
+    if (who.length) done++;
+    return `<div class="obj ${who.length ? "done" : ""}"><span class="box">${who.length ? ICON.check : ""}</span>
+      <div><b>${label}</b><small>Royals ${ord(t.rank)} of 10 · ${t.value} ${t.unit} against a league ${t.league}</small></div>
+      <span class="who">${who.join(", ")}</span></div>`;
+  }).join("");
+  $("#score").innerHTML = done === 3 ? `<em>All 3 gaps covered</em>` : `${done} of 3 gaps covered`;
+  $("#picks-sub").textContent = `${3 - ps.length} of 3 overseas places left`;
+  for (const r of document.querySelectorAll("#rows .row")) {
+    const p = DATA.roles[S.role].players[+r.dataset.i];
+    r.classList.toggle("picked", S.picks.includes(p.id));
+  }
+}
+
+function togglePick(id) {
+  const p = byId[id];
+  if (S.picks.includes(id)) { S.picks = S.picks.filter(x => x !== id); toast(`${p.name} removed`); }
+  else if (S.picks.length >= 3) { toast("All three overseas places are taken. Remove one first."); return; }
+  else {
+    S.picks.push(id);
+    const fills = p.needs.map(n => NEEDS[n]).join(" and ");
+    toast(fills ? `${p.name} added: fills ${fills}` : `${p.name} added: depth, not one of the three gaps`);
+  }
+  save(); renderPicks(); renderCard(false);
+}
+
+/* ------------------------------------------------------------ locked board */
+function renderLocked() {
+  const lrow = (r, label) => `<div class="lrow"><h4>${label}</h4><div class="ltiles">${DATA.roles[r].locked.map(l => {
+    if (l.state === "open") return `<button class="lt open" data-open="${r}"><span class="n">#${l.rank}</span><b>${esc(l.name)}</b><span class="st">${ICON.star2}In the auction</span></button>`;
+    if (l.state === "royal") return `<div class="lt royal"><span class="n">#${l.rank}</span><b>${esc(l.name)}</b><span class="st">Already a Royal</span></div>`;
+    return `<div class="lt locked"><span class="n">#${l.rank}</span><b>${esc(l.name)}</b><span class="st">${ICON.lock}Kept by ${esc(l.team)}</span></div>`;
+  }).join("")}</div></div>`;
+  $("#lrows").innerHTML = lrow("bat", "Batters") + lrow("bowl", "Bowlers");
+}
+
+function renderCredits() {
+  const ps = Object.values(byId).filter(p => p.photo);
+  $("#credits").innerHTML = ps.map(p => `<li>${esc(p.name)}: <a href="${esc(p.photo.page)}" target="_blank" rel="noopener">${esc(p.photo.artist)}</a>,
+    <a href="${esc(p.photo.licence_url)}" target="_blank" rel="noopener">${esc(p.photo.licence)}</a></li>`).join("");
+}
+
+/* ------------------------------------------------------------ state */
+function go(role, i, animate = true) {
+  const n = DATA.roles[role].players.length;
+  S.role = role; S.i = (i + n) % n;
+  renderBoard(); renderCard(animate); renderSide(); renderSheet();
+  try { history.replaceState(null, "", "#" + cur().id); } catch (e) {}
+}
+
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("on"), 2600);
+}
+
+/* tooltips */
+const tip = $("#tip");
+function showTip(el, x, y) {
+  tip.textContent = el.dataset.tip; tip.classList.add("on");
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(Math.max(8, x - w / 2), innerWidth - w - 8) + "px";
+  tip.style.top = (y - h - 14 < 8 ? y + 18 : y - h - 14) + "px";
+}
+document.addEventListener("pointermove", e => {
+  const el = e.target.closest("[data-tip]");
+  if (el) showTip(el, e.clientX, e.clientY); else tip.classList.remove("on");
+});
+document.addEventListener("focusin", e => {
+  const el = e.target.closest("[data-tip]");
+  if (el) { const r = el.getBoundingClientRect(); showTip(el, r.left + r.width / 2, r.top); }
+});
+document.addEventListener("focusout", () => tip.classList.remove("on"));
+addEventListener("scroll", () => tip.classList.remove("on"), {passive: true});
+
+/* events */
+$("#rows").addEventListener("click", e => { const b = e.target.closest(".row"); if (b) go(S.role, +b.dataset.i); });
+for (const b of document.querySelectorAll(".tabs button")) b.addEventListener("click", () => { if (b.dataset.role !== S.role) go(b.dataset.role, 0); });
+$("#prev").onclick = () => go(S.role, S.i - 1);
+$("#next").onclick = () => go(S.role, S.i + 1);
+$("#add").onclick = () => togglePick(cur().id);
+$("#slots").addEventListener("click", e => { const b = e.target.closest("[data-rm]"); if (b) togglePick(b.dataset.rm); });
+$("#analyst").onclick = () => {
+  S.picks = DATA.analyst.map(n => Object.values(byId).find(p => p.name === n).id);
+  save(); renderPicks(); renderCard(false); toast("Analyst's picks: Boult for the new ball, Pathirana at the death, Raza as a death hitter who bowls");
+};
+$("#clear").onclick = () => { S.picks = []; save(); renderPicks(); renderCard(false); toast("Picks cleared"); };
+$("#lrows").addEventListener("click", e => {
+  const b = e.target.closest("[data-open]");
+  if (b) { go(b.dataset.open, 0); scrollTo({top: 0, behavior: "smooth"}); }
+});
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input, textarea, select") || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); go(S.role, S.i + 1); focusRow(); }
+  if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); go(S.role, S.i - 1); focusRow(); }
+});
+function focusRow() { const r = $("#rows .row[aria-selected='true']"); if (r && document.activeElement && document.activeElement.closest("#rows")) r.focus(); }
+
+/* start */
+(function init() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  let role = "bat", i = 0;
+  if (byId[h]) { role = byId[h].kind; i = DATA.roles[role].players.indexOf(byId[h]); }
+  renderDepts(); renderLocked(); renderCredits(); renderPicks();
+  go(role, i, true);
+})();
+</script>
+</body>
+</html>
